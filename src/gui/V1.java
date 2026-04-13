@@ -1,6 +1,8 @@
 package gui;
 
 import java.awt.EventQueue;
+import clases.Producto;
+import clases.DetallePedido;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -127,17 +129,17 @@ public class V1 extends JFrame implements ActionListener {
 
 	}
 	public void actionPerformed(ActionEvent e) {
+
 		if (e.getSource() == btnBuscar) {
 			do_btnBuscar_actionPerformed(e);
 		}
-<<<<<<< HEAD
+
 		if (e.getSource() == btnAdicionar) {
 			do_btnAdicionar_actionPerformed(e);
 		}
-=======
->>>>>>> origin/harold-rama
+
 		if (e.getSource() == btnReportar) {
-			do_btnReportar_actionPerformed(e);
+			do_btnReportar_actionPerformed(e);}
 		}
 		private ArrayList<DetallePedido> listaDetalles = new ArrayList<>();	
 	
@@ -156,8 +158,16 @@ public class V1 extends JFrame implements ActionListener {
 		
 	}
 	protected void do_btnAdicionar_actionPerformed(ActionEvent e) {
-	}
-	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
+		String nombre = txtProducto.getText();
+		double precio = Double.parseDouble(txtPrecio.getText());
+		int cantidad = Integer.parseInt(txtCant.getText());
+
+		Producto p = new Producto(1, nombre, precio);
+		DetallePedido d = new DetallePedido(p, cantidad);
+
+		   textArea.append("Producto: " + nombre + 
+                   " | Precio: " + precio + 
+                   " | Cantidad: " + cantidad + "\n");
 	}
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 	    String busqueda = txtProducto.getText().trim();
@@ -186,7 +196,8 @@ public class V1 extends JFrame implements ActionListener {
 	        JOptionPane.showMessageDialog(this, "El producto no se encuentra en la lista de adicionados.");
 	        txtPrecio.setText("");
 	    }
+	
 	}
-		
+
 }
 
