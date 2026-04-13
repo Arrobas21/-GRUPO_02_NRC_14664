@@ -5,12 +5,17 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import clases.DetallePedido;
+import clases.Producto;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class V1 extends JFrame implements ActionListener {
 
@@ -27,7 +32,8 @@ public class V1 extends JFrame implements ActionListener {
 	private JButton btnReportar;
 	private JButton btnAdicionar;
 	private JButton btnBuscar;
-
+	
+	ArrayList<String> listaPedidos = new ArrayList<>();
 	/**
 	 * Launch the application.
 	 */
@@ -105,22 +111,46 @@ public class V1 extends JFrame implements ActionListener {
 		}
 		{
 			btnAdicionar = new JButton("Adicionar");
+			btnAdicionar.addActionListener(this);
 			btnAdicionar.setBounds(171, 83, 84, 20);
 			contentPane.add(btnAdicionar);
 		}
 		{
 			btnBuscar = new JButton("Buscar");
+			btnBuscar.addActionListener(this);
 			btnBuscar.setBounds(290, 83, 84, 20);
 			contentPane.add(btnBuscar);
 		}
 
 	}
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnBuscar) {
+			do_btnBuscar_actionPerformed(e);
+		}
+		if (e.getSource() == btnAdicionar) {
+			do_btnAdicionar_actionPerformed(e);
+		}
 		if (e.getSource() == btnReportar) {
 			do_btnReportar_actionPerformed(e);
 		}
-	}
+		private ArrayList<DetallePedido> listaDetalles = new ArrayList<>();	
+	
 	protected void do_btnReportar_actionPerformed(ActionEvent e) {
 		
+		
+		String reporte = "";
+
+	    for (DetallePedido d : listaDetalles) {
+	        reporte += "Producto: " + d.getProducto().getNombre() +
+	                   " | Precio: " + d.getProducto().getPrecio() +
+	                   " | Cantidad: " + d.getCantidad() + "\n";
+	    }
+
+	    textArea.setText(reporte);
+		
+	}
+	protected void do_btnAdicionar_actionPerformed(ActionEvent e) {
+	}
+	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 	}
 }
