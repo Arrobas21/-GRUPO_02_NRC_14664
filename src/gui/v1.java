@@ -1,26 +1,32 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
-import java.awt.Font;
 import javax.swing.JTextField;
-import javax.swing.JButton;
 import javax.swing.JTextArea;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class v1 extends JFrame {
+public class V1 extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JLabel lblNewLabel;
-	private JTextField txtLibro;
 	private JLabel lblNewLabel_1;
-	private JButton btnRegistrar;
-	private JTextArea txtS;
+	private JTextField txtProducto;
+	private JLabel lblNewLabel_2;
+	private JTextField txtPrecio;
+	private JTextArea textArea;
+	private JLabel lblNewLabel_3;
+	private JTextField txtCant;
+	private JButton btnReportar;
+	private JButton btnAdicionar;
+	private JButton btnBuscar;
 
 	/**
 	 * Launch the application.
@@ -29,7 +35,7 @@ public class v1 extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					v1 frame = new v1();
+					V1 frame = new V1();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -41,40 +47,80 @@ public class v1 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public v1() {
+	public V1() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 483, 343);
+		setBounds(100, 100, 506, 324);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		{
-			lblNewLabel = new JLabel("Sistema de Gestión Integrado para Bibliotecas Universitarias");
-			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			lblNewLabel.setBounds(42, 11, 398, 40);
+			lblNewLabel = new JLabel("SISTEMA DE PEDIDOS");
+			lblNewLabel.setBounds(170, 10, 120, 12);
 			contentPane.add(lblNewLabel);
 		}
 		{
-			txtLibro = new JTextField();
-			txtLibro.setBounds(91, 71, 86, 20);
-			contentPane.add(txtLibro);
-			txtLibro.setColumns(10);
-		}
-		{
-			lblNewLabel_1 = new JLabel("Ingresar Libro");
-			lblNewLabel_1.setBounds(14, 74, 67, 14);
+			lblNewLabel_1 = new JLabel("Producto");
+			lblNewLabel_1.setBounds(10, 43, 63, 12);
 			contentPane.add(lblNewLabel_1);
 		}
 		{
-			btnRegistrar = new JButton("Registrar Libro");
-			btnRegistrar.setBounds(42, 98, 120, 23);
-			contentPane.add(btnRegistrar);
+			txtProducto = new JTextField();
+			txtProducto.setBounds(65, 40, 96, 18);
+			contentPane.add(txtProducto);
+			txtProducto.setColumns(10);
 		}
 		{
-			txtS = new JTextArea();
-			txtS.setBounds(10, 127, 447, 166);
-			contentPane.add(txtS);
+			lblNewLabel_2 = new JLabel("Precio");
+			lblNewLabel_2.setBounds(170, 43, 56, 12);
+			contentPane.add(lblNewLabel_2);
+		}
+		{
+			txtPrecio = new JTextField();
+			txtPrecio.setBounds(221, 40, 96, 18);
+			contentPane.add(txtPrecio);
+			txtPrecio.setColumns(10);
+		}
+		{
+			textArea = new JTextArea();
+			textArea.setBounds(10, 113, 472, 151);
+			contentPane.add(textArea);
+		}
+		{
+			lblNewLabel_3 = new JLabel("Cantidad");
+			lblNewLabel_3.setBounds(327, 43, 71, 12);
+			contentPane.add(lblNewLabel_3);
+		}
+		{
+			txtCant = new JTextField();
+			txtCant.setBounds(386, 40, 96, 18);
+			contentPane.add(txtCant);
+			txtCant.setColumns(10);
+		}
+		{
+			btnReportar = new JButton("Reportar");
+			btnReportar.addActionListener(this);
+			btnReportar.setBounds(41, 83, 84, 20);
+			contentPane.add(btnReportar);
+		}
+		{
+			btnAdicionar = new JButton("Adicionar");
+			btnAdicionar.setBounds(171, 83, 84, 20);
+			contentPane.add(btnAdicionar);
+		}
+		{
+			btnBuscar = new JButton("Buscar");
+			btnBuscar.setBounds(290, 83, 84, 20);
+			contentPane.add(btnBuscar);
 		}
 
+	}
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnReportar) {
+			do_btnReportar_actionPerformed(e);
+		}
+	}
+	protected void do_btnReportar_actionPerformed(ActionEvent e) {
+		
 	}
 }
