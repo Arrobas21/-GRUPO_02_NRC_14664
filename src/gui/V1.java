@@ -10,10 +10,12 @@ import clases.DetallePedido;
 import clases.Producto;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
@@ -21,6 +23,7 @@ public class V1 extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private ArrayList<clases.Producto> listaProductos = new ArrayList<>();
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
 	private JTextField txtProducto;
@@ -127,9 +130,12 @@ public class V1 extends JFrame implements ActionListener {
 		if (e.getSource() == btnBuscar) {
 			do_btnBuscar_actionPerformed(e);
 		}
+<<<<<<< HEAD
 		if (e.getSource() == btnAdicionar) {
 			do_btnAdicionar_actionPerformed(e);
 		}
+=======
+>>>>>>> origin/harold-rama
 		if (e.getSource() == btnReportar) {
 			do_btnReportar_actionPerformed(e);
 		}
@@ -153,4 +159,34 @@ public class V1 extends JFrame implements ActionListener {
 	}
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 	}
+	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
+	    String busqueda = txtProducto.getText().trim();
+	    
+	    if (busqueda.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Ingrese el nombre o ID para buscar.");
+	        return;
+	    }
+
+	    boolean encontrado = false;
+
+	    for (clases.Producto p : listaProductos) {
+	        if (String.valueOf(p.getIdProducto()).equals(busqueda) || 
+	            p.getNombre().equalsIgnoreCase(busqueda)) {
+	            
+	            txtPrecio.setText(String.valueOf(p.getPrecio()));
+	            txtProducto.setText(p.getNombre());
+	            textArea.append("Resultado: " + p.getNombre() + " - S/ " + p.getPrecio() + "\n");
+	            
+	            encontrado = true;
+	            break;
+	        }
+	    }
+
+	    if (!encontrado) {
+	        JOptionPane.showMessageDialog(this, "El producto no se encuentra en la lista de adicionados.");
+	        txtPrecio.setText("");
+	    }
+	}
+		
 }
+
