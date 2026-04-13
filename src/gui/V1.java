@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.awt.Font;
 
 public class V1 extends JFrame implements ActionListener {
 
@@ -38,7 +39,6 @@ public class V1 extends JFrame implements ActionListener {
 	private JButton btnAdicionar;
 	private JButton btnBuscar;
 	
-	ArrayList<String> listaPedidos = new ArrayList<>();
 	/**
 	 * Launch the application.
 	 */
@@ -67,7 +67,8 @@ public class V1 extends JFrame implements ActionListener {
 		contentPane.setLayout(null);
 		{
 			lblNewLabel = new JLabel("SISTEMA DE PEDIDOS");
-			lblNewLabel.setBounds(170, 10, 120, 12);
+			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lblNewLabel.setBounds(170, 10, 147, 12);
 			contentPane.add(lblNewLabel);
 		}
 		{
@@ -117,13 +118,13 @@ public class V1 extends JFrame implements ActionListener {
 		{
 			btnAdicionar = new JButton("Adicionar");
 			btnAdicionar.addActionListener(this);
-			btnAdicionar.setBounds(171, 83, 84, 20);
+			btnAdicionar.setBounds(181, 83, 84, 20);
 			contentPane.add(btnAdicionar);
 		}
 		{
 			btnBuscar = new JButton("Buscar");
 			btnBuscar.addActionListener(this);
-			btnBuscar.setBounds(290, 83, 84, 20);
+			btnBuscar.setBounds(326, 82, 84, 20);
 			contentPane.add(btnBuscar);
 		}
 
@@ -164,10 +165,9 @@ public class V1 extends JFrame implements ActionListener {
 
 		Producto p = new Producto(1, nombre, precio);
 		DetallePedido d = new DetallePedido(p, cantidad);
-
-		   textArea.append("Producto: " + nombre + 
-                   " | Precio: " + precio + 
-                   " | Cantidad: " + cantidad + "\n");
+			listaDetalles.add(d);
+		   JOptionPane.showMessageDialog(this,"Producto agregado");
+		   	
 	}
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 	    String busqueda = txtProducto.getText().trim();
@@ -179,19 +179,23 @@ public class V1 extends JFrame implements ActionListener {
 
 	    boolean encontrado = false;
 
-	    for (clases.Producto p : listaProductos) {
-	        if (String.valueOf(p.getIdProducto()).equals(busqueda) || 
-	            p.getNombre().equalsIgnoreCase(busqueda)) {
-	            
-	            txtPrecio.setText(String.valueOf(p.getPrecio()));
+	    for (DetallePedido d : listaDetalles) {
+	        Producto p = d.getProducto();
+	        if (p.getNombre().equalsIgnoreCase(busqueda) ||
+	            String.valueOf(p.getIdProducto()).equals(busqueda)) {
+
 	            txtProducto.setText(p.getNombre());
-	            textArea.append("Resultado: " + p.getNombre() + " - S/ " + p.getPrecio() + "\n");
-	            
+	            txtPrecio.setText(String.valueOf(p.getPrecio()));
+
+	            textArea.setText(
+	                "Producto: " + p.getNombre() +
+	                "\nPrecio: " + p.getPrecio() +
+	                "\nCantidad: " + d.getCantidad()
+	            );
 	            encontrado = true;
 	            break;
 	        }
 	    }
-
 	    if (!encontrado) {
 	        JOptionPane.showMessageDialog(this, "El producto no se encuentra en la lista de adicionados.");
 	        txtPrecio.setText("");

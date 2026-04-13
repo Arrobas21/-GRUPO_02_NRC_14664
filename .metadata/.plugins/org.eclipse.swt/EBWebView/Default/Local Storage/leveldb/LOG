@@ -1,9 +1,2 @@
-<<<<<<< HEAD
-2026/04/12-21:05:26.177 379c Reusing MANIFEST C:\Users\ACHE\Desktop\TECPO\-GRUPO_02_NRC_14664\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
-2026/04/12-21:05:26.186 379c Recovering log #3
-2026/04/12-21:05:26.189 379c Reusing old log C:\Users\ACHE\Desktop\TECPO\-GRUPO_02_NRC_14664\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/000003.log 
-=======
-2026/04/12-22:54:42.068 29d4 Reusing MANIFEST C:\Users\Windows 10 Pro\Documents\TECPO GRUPO 2\-GRUPO_02_NRC_14664\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
-2026/04/12-22:54:42.090 29d4 Recovering log #3
-2026/04/12-22:54:42.097 29d4 Reusing old log C:\Users\Windows 10 Pro\Documents\TECPO GRUPO 2\-GRUPO_02_NRC_14664\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/000003.log 
->>>>>>> origin/EdgarIsmael20-rama
+2026/04/13-01:37:53.786 3f5c Creating DB C:\Users\rrain\Documents\PROYECTO GRUPAL TECPRO\-GRUPO_02_NRC_14664\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb since it was missing.
+2026/04/13-01:37:53.801 3f5c Reusing MANIFEST C:\Users\rrain\Documents\PROYECTO GRUPAL TECPRO\-GRUPO_02_NRC_14664\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
