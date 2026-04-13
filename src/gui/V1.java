@@ -148,8 +148,12 @@ public class V1 extends JFrame implements ActionListener {
 		
 		
 		String reporte = "";
-
-	    for (DetallePedido d : listaDetalles) {
+		
+		if (listaDetalles.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "No hay productos agregados");
+			return;
+		}
+	    for (DetallePedido d : listaDetalles) { 
 	        reporte += "Producto: " + d.getProducto().getNombre() +
 	                   " | Precio: " + d.getProducto().getPrecio() +
 	                   " | Cantidad: " + d.getCantidad() + "\n";
@@ -159,14 +163,57 @@ public class V1 extends JFrame implements ActionListener {
 		
 	}
 	protected void do_btnAdicionar_actionPerformed(ActionEvent e) {
-		String nombre = txtProducto.getText();
-		double precio = Double.parseDouble(txtPrecio.getText());
-		int cantidad = Integer.parseInt(txtCant.getText());
+		String nombre = txtProducto.getText().trim();
+	    String precioTxt = txtPrecio.getText().trim();
+	    String cantidadTxt = txtCant.getText().trim();
 
-		Producto p = new Producto(1, nombre, precio);
-		DetallePedido d = new DetallePedido(p, cantidad);
-			listaDetalles.add(d);
-		   JOptionPane.showMessageDialog(this,"Producto agregado");
+	    if (nombre.isEmpty() || precioTxt.isEmpty() || cantidadTxt.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Complete todos los campos");
+	        return;
+	    }
+
+	    if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
+	        JOptionPane.showMessageDialog(this, "El nombre del producto solo debe contener letras");
+	        return;
+	    }
+
+	    double precio;
+	    int cantidad;
+
+	    try {
+	        precio = Double.parseDouble(precioTxt);
+	        if (precio <= 0) {
+	            JOptionPane.showMessageDialog(this, "El precio debe ser mayor a 0");
+	            return;
+	        }
+	    } catch (NumberFormatException ex) {
+	        JOptionPane.showMessageDialog(this, "Ingrese un precio válido");
+	        return;
+	    }
+
+	    try {
+	        cantidad = Integer.parseInt(cantidadTxt);
+	        if (cantidad <= 0) {
+	            JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0");
+	            return;
+	        }
+	    } catch (NumberFormatException ex) {
+	        JOptionPane.showMessageDialog(this, "Ingrese una cantidad válida");
+	        return;
+	    }
+
+	    for (DetallePedido det : listaDetalles) {
+	        if (det.getProducto().getNombre().equalsIgnoreCase(nombre)) {
+	            JOptionPane.showMessageDialog(this, "El producto ya está agregado");
+	            return;
+	        }
+	    }
+
+	    Producto p = new Producto(1, nombre, precio);
+	    DetallePedido d = new DetallePedido(p, cantidad);
+	    listaDetalles.add(d);
+
+	    JOptionPane.showMessageDialog(this, "Producto agregado correctamente");
 		   	
 	}
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
