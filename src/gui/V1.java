@@ -359,7 +359,7 @@ public class V1 extends JFrame implements ActionListener {
 		            // Salir del ciclo porque ya se encontró
 		            break;
 
-		        } catch (NumberFormatException e) {
+		        } catch (NumberFormatException e1) {
 		            // Si el usuario escribe algo que no es número
 		            JOptionPane.showMessageDialog(this, "Debe ingresar un número válido.");
 		            return;
