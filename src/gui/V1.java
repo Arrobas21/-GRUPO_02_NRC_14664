@@ -66,9 +66,9 @@ public class V1 extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		{
-			lblNewLabel = new JLabel("SISTEMA DE PEDIDOS");
+			lblNewLabel = new JLabel("SISTEMA DE PEDIDOS - PEDIDOS");
 			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			lblNewLabel.setBounds(170, 10, 147, 12);
+			lblNewLabel.setBounds(130, 10, 228, 12);
 			contentPane.add(lblNewLabel);
 		}
 		{
@@ -112,24 +112,38 @@ public class V1 extends JFrame implements ActionListener {
 		{
 			btnReportar = new JButton("Reportar");
 			btnReportar.addActionListener(this);
-			btnReportar.setBounds(41, 83, 84, 20);
+			btnReportar.setBounds(10, 83, 84, 20);
 			contentPane.add(btnReportar);
 		}
 		{
 			btnAdicionar = new JButton("Adicionar");
 			btnAdicionar.addActionListener(this);
-			btnAdicionar.setBounds(181, 83, 84, 20);
+			btnAdicionar.setBounds(106, 83, 90, 20);
 			contentPane.add(btnAdicionar);
 		}
 		{
 			btnBuscar = new JButton("Buscar");
 			btnBuscar.addActionListener(this);
-			btnBuscar.setBounds(326, 82, 84, 20);
+			btnBuscar.setBounds(200, 83, 84, 20);
 			contentPane.add(btnBuscar);
+		}
+		{
+			btnEliminar = new JButton("Eliminar");
+			btnEliminar.addActionListener(this);
+			btnEliminar.setBounds(292, 83, 84, 20);
+			contentPane.add(btnEliminar);
+		}
+		{
+			btnModificar = new JButton("Modificar");
+			btnModificar.setBounds(386, 83, 96, 20);
+			contentPane.add(btnModificar);
 		}
 
 	}
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnEliminar) {
+			do_btnEliminar_actionPerformed(e);
+		}
 
 		if (e.getSource() == btnBuscar) {
 			do_btnBuscar_actionPerformed(e);
@@ -143,13 +157,16 @@ public class V1 extends JFrame implements ActionListener {
 			do_btnReportar_actionPerformed(e);}
 		}
 		private ArrayList<DetallePedido> listaDetalles = new ArrayList<>();	
-	
+		private JButton btnEliminar;
+		private JButton btnModificar;
+		
 	protected void do_btnReportar_actionPerformed(ActionEvent e) {
 		
 		
 		String reporte = "";
 		
 		if (listaDetalles.isEmpty()) {
+			textArea.setText("");
 			JOptionPane.showMessageDialog(this, "No hay productos agregados");
 			return;
 		}
@@ -216,6 +233,7 @@ public class V1 extends JFrame implements ActionListener {
 	    JOptionPane.showMessageDialog(this, "Producto agregado correctamente");
 		   	
 	}
+	
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 	    String busqueda = txtProducto.getText().trim();
 	    
@@ -236,8 +254,8 @@ public class V1 extends JFrame implements ActionListener {
 
 	            textArea.setText(
 	                "Producto: " + p.getNombre() +
-	                "\nPrecio: " + p.getPrecio() +
-	                "\nCantidad: " + d.getCantidad()
+	                " | Precio: " + p.getPrecio() +
+	                " | Cantidad: " + d.getCantidad()
 	            );
 	            encontrado = true;
 	            break;
@@ -250,5 +268,37 @@ public class V1 extends JFrame implements ActionListener {
 	
 	}
 
+	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
+		
+		String busqueda = txtProducto.getText().trim();
+		
+		if (busqueda.isEmpty()) 
+		{
+			JOptionPane.showMessageDialog(this, "Ingrese el nombre o ID para eliminar.");
+	        return;
+		}
+		
+		boolean encontrado = false;
+		
+		for ( int i = 0; i < listaDetalles.size(); i++) {
+			DetallePedido d = listaDetalles.get(i);
+			Producto p = d.getProducto();
+			
+			if (p.getNombre().equalsIgnoreCase(busqueda) ||
+			        String.valueOf(p.getIdProducto()).equals(busqueda)) {
+				listaDetalles.remove(i);
+				JOptionPane.showMessageDialog(this, "Producto eliminado");
+
+		        encontrado = true;
+		        break;
+			}
+		}
+		if (!encontrado) {
+		    JOptionPane.showMessageDialog(this, "El producto no se encuentra en la lista de adicionados.");
+		    txtPrecio.setText("");
+		}
+	
+		
+	}
 }
 
