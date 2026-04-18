@@ -135,12 +135,16 @@ public class V1 extends JFrame implements ActionListener {
 		}
 		{
 			btnModificar = new JButton("Modificar");
+			btnModificar.addActionListener(this);
 			btnModificar.setBounds(386, 83, 96, 20);
 			contentPane.add(btnModificar);
 		}
 
 	}
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnModificar) {
+			do_btnModificar_actionPerformed(e);
+		}
 		if (e.getSource() == btnEliminar) {
 			do_btnEliminar_actionPerformed(e);
 		}
@@ -300,5 +304,74 @@ public class V1 extends JFrame implements ActionListener {
 	
 		
 	}
-}
+	protected void do_btnModificar_actionPerformed(ActionEvent e) {
+		// Obtener lo que el usuario escribió en el campo de texto
+		String busqueda = txtProducto.getText().trim();
+
+		// Verificar si el campo está vacío
+		if (busqueda.isEmpty()) {
+		    JOptionPane.showMessageDialog(this, "Ingrese el nombre o ID del producto a modificar.");
+		    return; // detener ejecución si no hay dato
+		}
+
+		// Variable para saber si se encontró el producto
+		boolean encontrado = false;
+
+		// Recorrer la lista de detalles del pedido
+		for (DetallePedido d : listaDetalles) {
+
+		    // Obtener el producto dentro del detalle
+		    Producto p = d.getProducto();
+
+		    // Comparar si coincide el nombre o el ID con lo buscado
+		    if (p.getNombre().equalsIgnoreCase(busqueda) ||
+		        String.valueOf(p.getIdProducto()).equals(busqueda)) {
+
+		        // Pedir al usuario la nueva cantidad
+		        String nuevaCantStr = JOptionPane.showInputDialog(this, "Ingrese la nueva cantidad:");
+
+		        // Si el usuario cancela o deja vacío
+		        if (nuevaCantStr == null || nuevaCantStr.trim().isEmpty()) {
+		            JOptionPane.showMessageDialog(this, "Operación cancelada.");
+		            return;
+		        }
+
+		        try {
+		            // Convertir el valor ingresado a número entero
+		            int nuevaCantidad = Integer.parseInt(nuevaCantStr);
+
+		            // Validar que la cantidad sea mayor a 0
+		            if (nuevaCantidad <= 0) {
+		                JOptionPane.showMessageDialog(this, "Ingrese una cantidad válida.");
+		                return;
+		            }
+
+		            // Modificar la cantidad del detalle
+		            // Esto actualiza automáticamente el subtotal (según tu clase)
+		            d.setCantidad(nuevaCantidad);
+
+		            // Mostrar mensaje de éxito
+		            JOptionPane.showMessageDialog(this, "Cantidad modificada correctamente");
+
+		            // Marcar que sí se encontró el producto
+		            encontrado = true;
+
+		            // Salir del ciclo porque ya se encontró
+		            break;
+
+		        } catch (NumberFormatException e) {
+		            // Si el usuario escribe algo que no es número
+		            JOptionPane.showMessageDialog(this, "Debe ingresar un número válido.");
+		            return;
+		        }
+		    }
+		}
+
+		// Si no se encontró el producto en la lista
+		if (!encontrado) {
+		    JOptionPane.showMessageDialog(this, "Producto no encontrado.");
+		}
+
+		}
+	}
 
