@@ -59,7 +59,7 @@ public class v2 extends JFrame implements ActionListener {
 	 */
 	public v2() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 462, 312);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -126,6 +126,7 @@ public class v2 extends JFrame implements ActionListener {
 		}
 		{
 			btnModificar = new JButton("Modificar");
+			btnModificar.addActionListener(this);
 			btnModificar.setBounds(338, 97, 96, 20);
 			contentPane.add(btnModificar);
 		}
@@ -137,6 +138,9 @@ public class v2 extends JFrame implements ActionListener {
 
 	}
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnModificar) {
+			do_btnModificar_actionPerformed(e);
+		}
 		if (e.getSource() == btnEliminar) {
 			do_btnEliminar_actionPerformed(e);
 		}
@@ -172,4 +176,42 @@ public class v2 extends JFrame implements ActionListener {
 		    txtPrecio.setText("");
 		}
 	}
+	protected void do_btnModificar_actionPerformed(ActionEvent e) {
+	    String buscar = txtProducto.getText().trim();
+	    
+	    if (buscar.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Ingrese el nombre/ID del producto a modificar.");
+	        return;
+	    }
+
+	    boolean modificado = false;
+
+	    for (clases.Producto p : listaProductos) {
+	        if (String.valueOf(p.getIdProducto()).equals(buscar) || 
+	            p.getNombre().equalsIgnoreCase(buscar)) {
+	            
+	            try {
+
+	                double nuevoPrecio = Double.parseDouble(txtPrecio.getText());
+	                
+	                p.setNombre(txtProducto.getText());
+	                p.setPrecio(nuevoPrecio);
+	                
+	                textArea.append("Producto actualizado: " + p.getNombre() + "\n");
+	                JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
+	                
+	                modificado = true;
+	                break;
+	            } catch (NumberFormatException ex) {
+	                JOptionPane.showMessageDialog(this, "Error: El precio debe ser un número.");
+	                return;
+	            }
+	        }
+	    }
+
+	    if (!modificado) {
+	        JOptionPane.showMessageDialog(this, "No se encontró el producto para modificar.");
+	    }
+	}
 }
+
