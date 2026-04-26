@@ -1,4 +1,4 @@
-package gui;
+	package gui;
 
 import java.awt.EventQueue;
 import clases.Producto;
@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.awt.Font;
@@ -66,9 +67,9 @@ public class V1 extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		{
-			lblNewLabel = new JLabel("SISTEMA DE PEDIDOS - PEDIDOS");
+			lblNewLabel = new JLabel("SISTEMA DE PEDIDOS - PRODUCTOS");
 			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			lblNewLabel.setBounds(130, 10, 228, 12);
+			lblNewLabel.setBounds(130, 10, 246, 12);
 			contentPane.add(lblNewLabel);
 		}
 		{
@@ -160,24 +161,41 @@ public class V1 extends JFrame implements ActionListener {
 		if (e.getSource() == btnReportar) {
 			do_btnReportar_actionPerformed(e);}
 		}
-		private ArrayList<DetallePedido> listaDetalles = new ArrayList<>();	
 		private JButton btnEliminar;
 		private JButton btnModificar;
 		
-	protected void do_btnReportar_actionPerformed(ActionEvent e) {
+		public Producto buscar(String nombre) {
+		    for (Producto p : listaProductos) {
+		        if (p.getNombre().equalsIgnoreCase(nombre)) {
+		            return p;
+		        }
+		    }
+		    return null; // no encontrado
+		}
+		
+		public Producto buscar(int id) {
+		    for (Producto p : listaProductos) {
+		        if (p.getIdProducto() == id) {
+		            return p;
+		        }
+		    }
+		    return null;
+		}
+		
+		protected void do_btnReportar_actionPerformed(ActionEvent e) {
 		
 		
 		String reporte = "";
 		
-		if (listaDetalles.isEmpty()) {
+		if (listaProductos.isEmpty()) {
 			textArea.setText("");
 			JOptionPane.showMessageDialog(this, "No hay productos agregados");
 			return;
 		}
-	    for (DetallePedido d : listaDetalles) { 
-	        reporte += "Producto: " + d.getProducto().getNombre() +
-	                   " | Precio: " + d.getProducto().getPrecio() +
-	                   " | Cantidad: " + d.getCantidad() + "\n";
+	    for (Producto p : listaProductos) { 
+	        reporte += "Producto: " + p.getNombre() +
+	                   " | Precio: " + p.getPrecio() +
+	                   " | Cantidad: " + p.getStock() + "\n";
 	    }
 
 	    textArea.setText(reporte);
@@ -223,52 +241,46 @@ public class V1 extends JFrame implements ActionListener {
 	        return;
 	    }
 
-	    for (DetallePedido det : listaDetalles) {
-	        if (det.getProducto().getNombre().equalsIgnoreCase(nombre)) {
+	    for (Producto p : listaProductos) {
+	        if (p.getNombre().equalsIgnoreCase(nombre)) {
 	            JOptionPane.showMessageDialog(this, "El producto ya está agregado");
 	            return;
 	        }
 	    }
+	    
+	    int idProducto = listaProductos.size()+1;
 
-	    Producto p = new Producto(1, nombre, precio);
-	    DetallePedido d = new DetallePedido(p, cantidad);
-	    listaDetalles.add(d);
+	    Producto p = new Producto(idProducto, nombre, precio, cantidad);
+	    listaProductos.add(p);
 
 	    JOptionPane.showMessageDialog(this, "Producto agregado correctamente");
 		   	
 	}
 	
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
-	    String busqueda = txtProducto.getText().trim();
-	    
-	    if (busqueda.isEmpty()) {
-	        JOptionPane.showMessageDialog(this, "Ingrese el nombre o ID para buscar.");
-	        return;
-	    }
+		String busqueda = txtProducto.getText().trim();
 
-	    boolean encontrado = false;
+		if (busqueda.isEmpty()) {
+		    JOptionPane.showMessageDialog(this, "Ingrese nombre o ID");
+		    return;
+		}
 
-	    for (DetallePedido d : listaDetalles) {
-	        Producto p = d.getProducto();
-	        if (p.getNombre().equalsIgnoreCase(busqueda) ||
-	            String.valueOf(p.getIdProducto()).equals(busqueda)) {
+		Producto p = null;
 
-	            txtProducto.setText(p.getNombre());
-	            txtPrecio.setText(String.valueOf(p.getPrecio()));
+		// Verificar si es número
+		if (busqueda.matches("\\d+")) {
+		    p = buscar(Integer.parseInt(busqueda)); // usa método por ID
+		} else {
+		    p = buscar(busqueda); // usa método por nombre
+		}
 
-	            textArea.setText(
-	                "Producto: " + p.getNombre() +
-	                " | Precio: " + p.getPrecio() +
-	                " | Cantidad: " + d.getCantidad()
-	            );
-	            encontrado = true;
-	            break;
-	        }
-	    }
-	    if (!encontrado) {
-	        JOptionPane.showMessageDialog(this, "El producto no se encuentra en la lista de adicionados.");
-	        txtPrecio.setText("");
-	    }
+		if (p != null) {
+		    txtProducto.setText(p.getNombre());
+		    txtPrecio.setText(String.valueOf(p.getPrecio()));
+		    txtCant.setText(String.valueOf(p.getStock()));
+		} else {
+		    JOptionPane.showMessageDialog(this, "Producto no encontrado");
+		}
 	
 	}
 
@@ -284,13 +296,13 @@ public class V1 extends JFrame implements ActionListener {
 		
 		boolean encontrado = false;
 		
-		for ( int i = 0; i < listaDetalles.size(); i++) {
-			DetallePedido d = listaDetalles.get(i);
-			Producto p = d.getProducto();
+		for ( int i = 0; i < listaProductos.size(); i++) {
+			
+			Producto p = listaProductos.get(i);
 			
 			if (p.getNombre().equalsIgnoreCase(busqueda) ||
 			        String.valueOf(p.getIdProducto()).equals(busqueda)) {
-				listaDetalles.remove(i);
+				listaProductos.remove(i);
 				JOptionPane.showMessageDialog(this, "Producto eliminado");
 
 		        encontrado = true;
@@ -301,8 +313,6 @@ public class V1 extends JFrame implements ActionListener {
 		    JOptionPane.showMessageDialog(this, "El producto no se encuentra en la lista de adicionados.");
 		    txtPrecio.setText("");
 		}
-	
-		
 	}
 	protected void do_btnModificar_actionPerformed(ActionEvent e) {
 		// Obtener lo que el usuario escribió en el campo de texto
@@ -318,10 +328,7 @@ public class V1 extends JFrame implements ActionListener {
 		boolean encontrado = false;
 
 		// Recorrer la lista de detalles del pedido
-		for (DetallePedido d : listaDetalles) {
-
-		    // Obtener el producto dentro del detalle
-		    Producto p = d.getProducto();
+		for (Producto p : listaProductos) {
 
 		    // Comparar si coincide el nombre o el ID con lo buscado
 		    if (p.getNombre().equalsIgnoreCase(busqueda) ||
@@ -348,7 +355,7 @@ public class V1 extends JFrame implements ActionListener {
 
 		            // Modificar la cantidad del detalle
 		            // Esto actualiza automáticamente el subtotal (según tu clase)
-		            d.setCantidad(nuevaCantidad);
+		            p.setStock(nuevaCantidad);
 
 		            // Mostrar mensaje de éxito
 		            JOptionPane.showMessageDialog(this, "Cantidad modificada correctamente");

@@ -1,14 +1,22 @@
 package clases;
 
 public class Producto {
-	int idProducto;
+	int idProducto, stock;
 	String nombre;
-	double precio;
-	public Producto(int idProducto, String nombre, double precio) {
+	double precio;	
+	public Producto(int idProducto, String nombre, double precio, int stock) {
 		this.idProducto = idProducto;
 		this.nombre = nombre;
 		this.precio = precio;
+		this.stock = stock;
 	}
+	
+	public Producto(int id, String nombre, double precio) {
+	    this.idProducto = id;
+	    this.nombre = nombre;
+	    this.precio = precio;
+	}
+	
 	public int getIdProducto() {
 		return idProducto;
 	}
@@ -27,5 +35,16 @@ public class Producto {
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
+	public int getStock() {
+		return stock;
+	}
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+	
+	
+	
+	
+	
 	
 }
