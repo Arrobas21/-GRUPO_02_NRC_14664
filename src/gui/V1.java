@@ -260,6 +260,7 @@ public class V1 extends JFrame implements ActionListener {
 	}
 	
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
+		try {
 		String busqueda = txtProducto.getText().trim();
 
 		if (busqueda.isEmpty()) {
@@ -270,6 +271,12 @@ public class V1 extends JFrame implements ActionListener {
 		Producto p = null;
 
 		// Verificar si es número
+		try {
+			int id = integer.parselnt(busqueda);
+			p=buscar(id);
+		}catch (NumberFormatException ex) {
+			p=buscar(busqueda);
+		}
 		if (busqueda.matches("\\d+")) {
 		    p = buscar(Integer.parseInt(busqueda)); // usa método por ID
 		} else {
@@ -282,8 +289,11 @@ public class V1 extends JFrame implements ActionListener {
 		    txtCant.setText(String.valueOf(p.getStock()));
 		} else {
 		    JOptionPane.showMessageDialog(this, "Producto no encontrado");
+		    {catch (Exception ex) {
+			
+		}JOptionPane.showMessageDialog(this,"Error inesperado en la busqueda");{
+			
 		}
-	
 	}
 
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
