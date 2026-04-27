@@ -161,7 +161,7 @@ public class v2 extends JFrame implements ActionListener {
 	private ArrayList<Cliente> listaClientes = new ArrayList<>();	
 	
 	public void listarClientes() {
-	    txtS.setText(""); // limpiar antes de mostrar
+	    txtS.setText("");
 
 	    for (Cliente c : listaClientes) {
 	        txtS.append(
@@ -225,56 +225,59 @@ public class v2 extends JFrame implements ActionListener {
 	
 	}
 	protected void do_btnModificar_actionPerformed(ActionEvent e) {
-		String busqueda = txtNombre.getText().trim();
+		try { 
+			String busqueda = txtNombre.getText().trim();
 
-		if (busqueda.isEmpty()) {
-		    JOptionPane.showMessageDialog(this, "Ingrese nombre, ID o teléfono para modificar.");
-		    return;
+			if (busqueda.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Ingrese nombre, ID o teléfono para modificar.");
+				return;
+			}
+
+			boolean encontrado = false;
+
+			for (Cliente c : listaClientes) {
+				if (c.getNombre().equalsIgnoreCase(busqueda) ||
+					String.valueOf(c.getIdCliente()).equals(busqueda) ||
+					c.getTelefono().equals(busqueda)) {
+
+					String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", c.getNombre());
+					if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
+
+					if (!nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
+						JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras.");
+						return;
+					}
+
+					String nuevoTelefono = JOptionPane.showInputDialog(this, "Nuevo teléfono:", c.getTelefono());
+					if (nuevoTelefono == null || nuevoTelefono.trim().isEmpty()) return;
+
+					if (!nuevoTelefono.matches("\\d{9}")) {
+						JOptionPane.showMessageDialog(this, "El teléfono debe tener 9 dígitos.");
+						return;
+					}
+
+					String nuevaDireccion = JOptionPane.showInputDialog(this, "Nueva dirección:", c.getDireccion());
+					if (nuevaDireccion == null || nuevaDireccion.trim().isEmpty()) return;
+
+					c.setNombre(nuevoNombre.trim());
+					c.setTelefono(nuevoTelefono.trim());
+					c.setDireccion(nuevaDireccion.trim());
+
+					JOptionPane.showMessageDialog(this, "Cliente modificado correctamente.");
+
+					listarClientes();
+
+					encontrado = true;
+					break;
+				}
+			}
+
+			if (!encontrado) {
+				JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
+			}
+		} catch (Exception ex) { 
+			JOptionPane.showMessageDialog(this, "Ocurrió un error inesperado: " + ex.getMessage());
 		}
-
-		boolean encontrado = false;
-
-		for (Cliente c : listaClientes) {
-		    if (c.getNombre().equalsIgnoreCase(busqueda) ||
-		        String.valueOf(c.getIdCliente()).equals(busqueda) ||
-		        c.getTelefono().equals(busqueda)) {
-
-		        String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", c.getNombre());
-		        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
-
-		        if (!nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-		            JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras.");
-		            return;
-		        }
-
-		        String nuevoTelefono = JOptionPane.showInputDialog(this, "Nuevo teléfono:", c.getTelefono());
-		        if (nuevoTelefono == null || nuevoTelefono.trim().isEmpty()) return;
-
-		        if (!nuevoTelefono.matches("\\d{9}")) {
-		            JOptionPane.showMessageDialog(this, "El teléfono debe tener 9 dígitos.");
-		            return;
-		        }
-
-		        String nuevaDireccion = JOptionPane.showInputDialog(this, "Nueva dirección:", c.getDireccion());
-		        if (nuevaDireccion == null || nuevaDireccion.trim().isEmpty()) return;
-
-		        c.setNombre(nuevoNombre.trim());
-		        c.setTelefono(nuevoTelefono.trim());
-		        c.setDireccion(nuevaDireccion.trim());
-
-		        JOptionPane.showMessageDialog(this, "Cliente modificado correctamente.");
-
-		        listarClientes();
-
-		        encontrado = true;
-		        break;
-		    }
-		}
-
-		if (!encontrado) {
-		    JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
-		}
-	   
 	}
 	protected void do_btnReportar_actionPerformed(ActionEvent e) {
 		
