@@ -183,23 +183,25 @@ public class V1 extends JFrame implements ActionListener {
 		}
 		
 		protected void do_btnReportar_actionPerformed(ActionEvent e) {
-		
-		
-		String reporte = "";
-		
-		if (listaProductos.isEmpty()) {
-			textArea.setText("");
-			JOptionPane.showMessageDialog(this, "No hay productos agregados");
-			return;
-		}
-	    for (Producto p : listaProductos) { 
-	        reporte += "Producto: " + p.getNombre() +
-	                   " | Precio: " + p.getPrecio() +
-	                   " | Cantidad: " + p.getStock() + "\n";
-	    }
+			try {
+				String reporte = "";
+				
+				if (listaProductos.isEmpty()) {
+					textArea.setText("");
+					JOptionPane.showMessageDialog(this, "No hay productos agregados");
+					return;
+				}
+			    for (Producto p : listaProductos) { 
+			        reporte += "Producto: " + p.getNombre() +
+			                   " | Precio: " + p.getPrecio() +
+			                   " | Cantidad: " + p.getStock() + "\n";
+			    }
 
-	    textArea.setText(reporte);
-		
+			    textArea.setText(reporte);
+			} catch (Exception e2) {
+				// TODO: handle exception
+				JOptionPane.showMessageDialog(this,"Complete los datos por favor");
+			}
 	}
 	protected void do_btnAdicionar_actionPerformed(ActionEvent e) {
 		String nombre = txtProducto.getText().trim();
