@@ -160,6 +160,45 @@ public class v2 extends JFrame implements ActionListener {
 	}
 	private ArrayList<Cliente> listaClientes = new ArrayList<>();	
 	
+	//  MÉTODOS SOBRECARGADOS
+	public Cliente buscarCliente(String dato) {
+	    for (Cliente c : listaClientes) {
+	        if (c.getNombre().equalsIgnoreCase(dato) ||
+	            String.valueOf(c.getIdCliente()).equals(dato) ||
+	            c.getTelefono().equals(dato)) {
+	            return c;
+	        }
+	    }
+	    return null;
+	}
+
+	public Cliente buscarCliente(int id) {
+	    for (Cliente c : listaClientes) {
+	        if (c.getIdCliente() == id) {
+	            return c;
+	        }
+	    }
+	    return null;
+	}
+
+	public boolean eliminarCliente(String dato) {
+	    Cliente c = buscarCliente(dato);
+	    if (c != null) {
+	        listaClientes.remove(c);
+	        return true;
+	    }
+	    return false;
+	}
+
+	public boolean eliminarCliente(int id) {
+	    Cliente c = buscarCliente(id);
+	    if (c != null) {
+	        listaClientes.remove(c);
+	        return true;
+	    }
+	    return false;
+	}
+	
 	public void listarClientes() {
 	    txtS.setText(""); // limpiar antes de mostrar
 
