@@ -19,6 +19,7 @@ import javax.swing.table.DefaultTableModel;
 
 import clases.Cliente;
 import clases.DetallePedido;
+import clases.Pedido;
 import clases.Producto;
 
 import java.awt.event.ActionListener;
@@ -62,6 +63,7 @@ public class VPedidos extends JFrame implements ActionListener {
 	private JButton bt_Salir_pedido;
 	private ArrayList<Cliente> listaClientes;
 	private ArrayList<Producto> listaProductos;
+	private ArrayList<Pedido> listaPedidos;
 	private JLabel lblDni;
 	private JTextField textField_3;
 	private JComboBox cbCliente;

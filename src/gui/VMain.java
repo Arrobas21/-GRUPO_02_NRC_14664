@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import clases.Cliente;
+import clases.Pedido;
 import clases.Producto;
 
 import javax.swing.JLabel;
@@ -27,6 +28,8 @@ public class VMain extends JFrame implements ActionListener {
 	private JButton bt_Salir;
 	private ArrayList<Cliente> listaClientes;
 	private ArrayList<Producto> listaProductos;
+	private ArrayList<Pedido> listaPedidos;
+	private JButton btHistorial;
 
 	/**
 	 * Launch the application.
@@ -79,13 +82,19 @@ public class VMain extends JFrame implements ActionListener {
 		}
 		{
 			bt_Reportes = new JButton("Reportes");
-			bt_Reportes.setBounds(244, 136, 97, 20);
+			bt_Reportes.setBounds(71, 199, 97, 20);
 			contentPane.add(bt_Reportes);
 		}
 		{
 			bt_Salir = new JButton("Salir");
-			bt_Salir.setBounds(155, 199, 97, 20);
+			bt_Salir.setBounds(244, 199, 97, 20);
 			contentPane.add(bt_Salir);
+		}
+		{
+			btHistorial = new JButton("Historial");
+			btHistorial.addActionListener(this);
+			btHistorial.setBounds(244, 136, 97, 20);
+			contentPane.add(btHistorial);
 		}
 		listaClientes = new ArrayList<>();
 		listaProductos = new ArrayList<>();
@@ -93,6 +102,9 @@ public class VMain extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btHistorial) {
+			do_btHistorial_actionPerformed(e);
+		}
 		if (e.getSource() == bt_Clientes) {
 			do_bt_Clientes_actionPerformed(e);
 		}
@@ -112,10 +124,13 @@ public class VMain extends JFrame implements ActionListener {
 		VPedidos ventanapedidos = new VPedidos(listaClientes,listaProductos);
 		ventanapedidos.setVisible(true);
 		
-		
 	}
 	protected void do_bt_Clientes_actionPerformed(ActionEvent e) {
 		v2 ventanacliente = new v2(listaClientes);
 		ventanacliente.setVisible(true);
+	}
+	protected void do_btHistorial_actionPerformed(ActionEvent e) {
+		VHistorial vhistorial = new VHistorial(listaPedidos);
+		vhistorial.setVisible(true);
 	}
 }
