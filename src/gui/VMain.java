@@ -5,9 +5,14 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import clases.Cliente;
+import clases.Producto;
+
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
 public class VMain extends JFrame implements ActionListener {
@@ -20,6 +25,8 @@ public class VMain extends JFrame implements ActionListener {
 	private JButton bt_Pedidos;
 	private JButton bt_Reportes;
 	private JButton bt_Salir;
+	private ArrayList<Cliente> listaClientes;
+	private ArrayList<Producto> listaProductos;
 
 	/**
 	 * Launch the application.
@@ -54,6 +61,7 @@ public class VMain extends JFrame implements ActionListener {
 		}
 		{
 			bt_Clientes = new JButton("Clientes");
+			bt_Clientes.addActionListener(this);
 			bt_Clientes.setBounds(71, 61, 97, 20);
 			contentPane.add(bt_Clientes);
 		}
@@ -65,6 +73,7 @@ public class VMain extends JFrame implements ActionListener {
 		}
 		{
 			bt_Pedidos = new JButton("Pedidos");
+			bt_Pedidos.addActionListener(this);
 			bt_Pedidos.setBounds(71, 136, 97, 20);
 			contentPane.add(bt_Pedidos);
 		}
@@ -78,15 +87,35 @@ public class VMain extends JFrame implements ActionListener {
 			bt_Salir.setBounds(155, 199, 97, 20);
 			contentPane.add(bt_Salir);
 		}
+		listaClientes = new ArrayList<>();
+		listaProductos = new ArrayList<>();
 
 	}
+
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == bt_Clientes) {
+			do_bt_Clientes_actionPerformed(e);
+		}
+		if (e.getSource() == bt_Pedidos) {
+			do_bt_Pedidos_actionPerformed(e);
+		}
 		if (e.getSource() == bt_Productos) {
 			do_bt_Productos_actionPerformed(e);
 		}
 	}
 	protected void do_bt_Productos_actionPerformed(ActionEvent e) {
-		V1 ventanaproducto = new V1();
+		V1 ventanaproducto = new V1(listaProductos);
 		ventanaproducto.setVisible(true);
+	}
+	protected void do_bt_Pedidos_actionPerformed(ActionEvent e) {
+		
+		VPedidos ventanapedidos = new VPedidos(listaClientes,listaProductos);
+		ventanapedidos.setVisible(true);
+		
+		
+	}
+	protected void do_bt_Clientes_actionPerformed(ActionEvent e) {
+		v2 ventanacliente = new v2(listaClientes);
+		ventanacliente.setVisible(true);
 	}
 }

@@ -38,27 +38,15 @@ public class v2 extends JFrame implements ActionListener {
 	private JButton btnEliminar;
 	private JButton btnModificar;
 	private JTextArea txtS;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					v2 frame = new v2();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private ArrayList<Cliente> listaClientes;
+	private JTextField txtDni;
+	private JLabel lblDni;
 
 	/**
 	 * Create the frame.
 	 */
-	public v2() {
+	public v2(ArrayList<Cliente> listaClientes) {
+		this.listaClientes = listaClientes;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 530, 331);
 		contentPane = new JPanel();
@@ -68,7 +56,7 @@ public class v2 extends JFrame implements ActionListener {
 		{
 			lblSistemaDeClientes = new JLabel("SISTEMA DE CLIENTES");
 			lblSistemaDeClientes.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			lblSistemaDeClientes.setBounds(127, 11, 228, 12);
+			lblSistemaDeClientes.setBounds(176, 10, 170, 12);
 			contentPane.add(lblSistemaDeClientes);
 		}
 		{
@@ -84,60 +72,71 @@ public class v2 extends JFrame implements ActionListener {
 		}
 		{
 			lblNewLabel_1 = new JLabel("Telefono:");
-			lblNewLabel_1.setBounds(150, 54, 56, 12);
+			lblNewLabel_1.setBounds(270, 57, 56, 12);
 			contentPane.add(lblNewLabel_1);
 		}
 		{
 			txtTelefono = new JTextField();
 			txtTelefono.setColumns(10);
-			txtTelefono.setBounds(210, 51, 96, 18);
+			txtTelefono.setBounds(324, 54, 96, 18);
 			contentPane.add(txtTelefono);
 		}
 		{
 			lblNewLabel_2 = new JLabel("Dirección:");
-			lblNewLabel_2.setBounds(328, 54, 63, 12);
+			lblNewLabel_2.setBounds(56, 95, 63, 12);
 			contentPane.add(lblNewLabel_2);
 		}
 		{
 			txtDireccion = new JTextField();
 			txtDireccion.setColumns(10);
-			txtDireccion.setBounds(377, 51, 129, 18);
+			txtDireccion.setBounds(129, 92, 291, 18);
 			contentPane.add(txtDireccion);
 		}
 		{
 			btnReportar = new JButton("Reportar");
 			btnReportar.addActionListener(this);
-			btnReportar.setBounds(10, 108, 84, 20);
+			btnReportar.setBounds(10, 127, 84, 20);
 			contentPane.add(btnReportar);
 		}
 		{
 			btnAdicionar = new JButton("Adicionar");
 			btnAdicionar.addActionListener(this);
-			btnAdicionar.setBounds(104, 108, 90, 20);
+			btnAdicionar.setBounds(116, 127, 90, 20);
 			contentPane.add(btnAdicionar);
 		}
 		{
 			btnBuscar = new JButton("Buscar");
 			btnBuscar.addActionListener(this);
-			btnBuscar.setBounds(210, 108, 84, 20);
+			btnBuscar.setBounds(210, 127, 84, 20);
 			contentPane.add(btnBuscar);
 		}
 		{
 			btnEliminar = new JButton("Eliminar");
 			btnEliminar.addActionListener(this);
-			btnEliminar.setBounds(410, 108, 84, 20);
+			btnEliminar.setBounds(410, 127, 84, 20);
 			contentPane.add(btnEliminar);
 		}
 		{
 			btnModificar = new JButton("Modificar");
 			btnModificar.addActionListener(this);
-			btnModificar.setBounds(304, 108, 96, 20);
+			btnModificar.setBounds(304, 127, 96, 20);
 			contentPane.add(btnModificar);
 		}
 		{
 			txtS = new JTextArea();
 			txtS.setBounds(10, 157, 484, 124);
 			contentPane.add(txtS);
+		}
+		{
+			txtDni = new JTextField();
+			txtDni.setColumns(10);
+			txtDni.setBounds(176, 51, 84, 18);
+			contentPane.add(txtDni);
+		}
+		{
+			lblDni = new JLabel("DNI:");
+			lblDni.setBounds(150, 54, 63, 12);
+			contentPane.add(lblDni);
 		}
 
 	}
@@ -158,7 +157,6 @@ public class v2 extends JFrame implements ActionListener {
 			do_btnEliminar_actionPerformed(e);
 		}
 	}
-	private ArrayList<Cliente> listaClientes = new ArrayList<>();	
 	
 	public void listarClientes() {
 	    txtS.setText(""); // limpiar antes de mostrar
@@ -297,52 +295,84 @@ public class v2 extends JFrame implements ActionListener {
 	
 	protected void do_btnAdicionar_actionPerformed(ActionEvent e) {
 		
+		String dni = txtDni.getText().trim();
 		String nombre = txtNombre.getText().trim();
-		String telefóno = txtTelefono.getText().trim();
+		String telefono = txtTelefono.getText().trim();
 		String direccion = txtDireccion.getText().trim();
-		
 
-	    if (nombre.isEmpty() || telefóno.isEmpty() || direccion.isEmpty()) {
-	        JOptionPane.showMessageDialog(this, "Complete todos los campos");
-	        return;
-	    }
+		if (dni.isEmpty() || nombre.isEmpty() ||
+		    telefono.isEmpty() || direccion.isEmpty()) {
 
-	    if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-	        JOptionPane.showMessageDialog(this, "El nombre del cliente solo debe contener letras");
-	        return;
-	    }
-	    
-	    if (!telefóno	.matches("\\d{9}")) {
-	        JOptionPane.showMessageDialog(this, "El teléfono debe tener 9 dígitos numéricos");
-	        return;
-	    }
+		    JOptionPane.showMessageDialog(this,
+		            "Complete todos los campos");
+		    return;
+		}
 
-	    // Evitar duplicados (por teléfono)
-	    for (Cliente c : listaClientes) {
-	        if (c.getTelefono().equals(telefóno)) {
-	            JOptionPane.showMessageDialog(this, "El cliente ya está registrado");
-	            return;
-	        }
-	    }
+		// Validar DNI
+		if (!dni.matches("\\d{8}")) {
 
-	    // Generar ID automático
-	    int idCliente = listaClientes.size() + 1;
+		    JOptionPane.showMessageDialog(this,
+		            "El DNI debe tener 8 dígitos numéricos");
+		    return;
+		}
 
-	    // Crear cliente
-	    Cliente nuevo = new Cliente(idCliente, nombre, telefóno, direccion);
+		// Validar nombre
+		if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
 
-	    // Agregar a la lista
-	    listaClientes.add(nuevo);
+		    JOptionPane.showMessageDialog(this,
+		            "El nombre solo debe contener letras");
+		    return;
+		}
 
-	    // Mensaje
-	    JOptionPane.showMessageDialog(this, "Cliente registrado correctamente");
+		// Validar teléfono
+		if (!telefono.matches("\\d{9}")) {
 
-	    // Limpiar campos
-	    txtNombre.setText("");
-	    txtTelefono.setText("");
-	    txtDireccion.setText("");
-	    txtNombre.requestFocus();
-	    
+		    JOptionPane.showMessageDialog(this,
+		            "El teléfono debe tener 9 dígitos numéricos");
+		    return;
+		}
+
+		// Evitar DNI duplicado
+		for (Cliente c : listaClientes) {
+
+		    if (c.getDni().equals(dni)) {
+
+		        JOptionPane.showMessageDialog(this,
+		                "El DNI ya está registrado");
+		        return;
+		    }
+		}
+
+		// Evitar teléfono duplicado
+		for (Cliente c : listaClientes) {
+
+		    if (c.getTelefono().equals(telefono)) {
+
+		        JOptionPane.showMessageDialog(this,
+		                "El teléfono ya está registrado");
+		        return;
+		    }
+		}
+
+		// Generar ID automático
+		int idCliente = listaClientes.size() + 1;
+
+		// Crear cliente
+		Cliente nuevo = new Cliente(idCliente,nombre,dni,telefono,direccion);
+
+		// Agregar a lista
+		listaClientes.add(nuevo);
+
+		JOptionPane.showMessageDialog(this,
+		        "Cliente registrado correctamente");
+
+		// Limpiar campos
+		txtDni.setText("");
+		txtNombre.setText("");
+		txtTelefono.setText("");
+		txtDireccion.setText("");
+
+		txtDni.requestFocus();
 	}
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 		String busqueda = txtNombre.getText().trim();

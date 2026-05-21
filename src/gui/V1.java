@@ -2,6 +2,7 @@
 
 import java.awt.EventQueue;
 import clases.Producto;
+import clases.Cliente;
 import clases.DetallePedido;
 
 import javax.swing.JFrame;
@@ -22,12 +23,12 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.awt.Font;
+import javax.swing.JScrollPane;
 
 public class V1 extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private ArrayList<clases.Producto> listaProductos = new ArrayList<>();
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
 	private JTextField txtProducto;
@@ -39,27 +40,12 @@ public class V1 extends JFrame implements ActionListener {
 	private JButton btnReportar;
 	private JButton btnAdicionar;
 	private JButton btnBuscar;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					V1 frame = new V1();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	private ArrayList<Producto> listaProductos;
 	/**
 	 * Create the frame.
 	 */
-	public V1() {
+	public V1(ArrayList<Producto> listaProductos) {
+		this.listaProductos= listaProductos;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 506, 324);
 		contentPane = new JPanel();
@@ -93,11 +79,6 @@ public class V1 extends JFrame implements ActionListener {
 			txtPrecio.setBounds(221, 40, 96, 18);
 			contentPane.add(txtPrecio);
 			txtPrecio.setColumns(10);
-		}
-		{
-			textArea = new JTextArea();
-			textArea.setBounds(10, 113, 472, 151);
-			contentPane.add(textArea);
 		}
 		{
 			lblNewLabel_3 = new JLabel("Cantidad");
@@ -140,6 +121,15 @@ public class V1 extends JFrame implements ActionListener {
 			btnModificar.setBounds(386, 83, 96, 20);
 			contentPane.add(btnModificar);
 		}
+		{
+			scrollPane = new JScrollPane();
+			scrollPane.setBounds(24, 132, 458, 134);
+			contentPane.add(scrollPane);
+			{
+				textArea = new JTextArea();
+				scrollPane.setViewportView(textArea);
+			}
+		}
 
 	}
 	public void actionPerformed(ActionEvent e) {
@@ -163,6 +153,7 @@ public class V1 extends JFrame implements ActionListener {
 		}
 		private JButton btnEliminar;
 		private JButton btnModificar;
+		private JScrollPane scrollPane;
 		
 		public Producto buscar(String nombre) {
 		    for (Producto p : listaProductos) {

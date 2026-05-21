@@ -2,10 +2,11 @@ package clases;
 
 public class Cliente {
 	int idCliente;
-	String nombre,telefono,direccion; 
-	public Cliente(int idCliente, String nombre, String telefono, String direccion) {
+	String nombre,telefono,direccion,dni; 
+	public Cliente(int idCliente, String nombre, String dni, String telefono, String direccion) {
 		this.idCliente = idCliente;
 		this.nombre = nombre;
+		this.dni = dni;
 		this.telefono = telefono;
 		this.direccion = direccion;
 	}
@@ -33,6 +34,13 @@ public class Cliente {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
+	public String getDni() {
+		return dni;
+	}
+	public void setDni(String dni) {
+		this.dni = dni;
+	}
+	
 	
 	
 	
