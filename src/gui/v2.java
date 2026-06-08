@@ -18,6 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
@@ -169,6 +171,36 @@ public class v2 extends JFrame implements ActionListener {
 	            "Dirección: " + c.getDireccion() + "\n" +
 	            "--------------------------\n"
 	        );
+	    }
+	}
+	
+	
+	public void guardarClientes() {
+
+	    try {
+
+	        PrintWriter pw =
+	        new PrintWriter(
+	        new FileWriter("clientes.txt"));
+
+	        for (Cliente c : listaClientes) {
+
+	            pw.println(
+	                c.getIdCliente() + ";" +
+	                c.getNombre() + ";" +
+	                c.getDni() + ";" +
+	                c.getTelefono() + ";" +
+	                c.getDireccion()
+	            );
+	        }
+
+	        pw.close();
+
+	    } catch (Exception e) {
+
+	        JOptionPane.showMessageDialog(this,
+	                "Error al guardar archivo");
+
 	    }
 	}
 	
@@ -362,6 +394,8 @@ public class v2 extends JFrame implements ActionListener {
 
 		// Agregar a lista
 		listaClientes.add(nuevo);
+		
+		guardarClientes();
 
 		JOptionPane.showMessageDialog(this,
 		        "Cliente registrado correctamente");

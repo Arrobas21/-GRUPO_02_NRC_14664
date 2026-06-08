@@ -41,9 +41,9 @@ public class VPedidos extends JFrame implements ActionListener {
 	private JLabel lblNombre;
 	private JLabel lblTelefno;
 	private JLabel lblDireccin;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField txtNom;
+	private JTextField txtTelefono;
+	private JTextField txtDireccion;
 	private JTable table;
 	private JScrollPane scrollPane;
 	private JLabel lblNewLabel_1;
@@ -51,7 +51,7 @@ public class VPedidos extends JFrame implements ActionListener {
 	private JButton bt_buscar_pProducto;
 	private JLabel lblNewLabel_2;
 	private JTextField txt_cant_Pedido;
-	private JButton btnNewButton;
+	private JButton bt_AgregarProducto;
 	private JScrollPane scrollPane_1;
 	private JTable table_1;
 	private JLabel lblNewLabel_3;
@@ -64,17 +64,21 @@ public class VPedidos extends JFrame implements ActionListener {
 	private ArrayList<Cliente> listaClientes;
 	private ArrayList<Producto> listaProductos;
 	private ArrayList<Pedido> listaPedidos;
+	private ArrayList<DetallePedido> listaDetallesPedido;
 	private JLabel lblDni;
-	private JTextField textField_3;
+	private JTextField txtDNI;
 	private JComboBox cbCliente;
 
 	/**
 	 * Create the frame.
 	 */
 	public VPedidos(ArrayList<Cliente> listaClientes,
-	        ArrayList<Producto> listaProductos) {
+	        ArrayList<Producto> listaProductos,ArrayList<Pedido> listaPedidos) {
+		setTitle("PEDIDOS");
 		this.listaClientes = listaClientes;
 	    this.listaProductos = listaProductos;
+	    this.listaPedidos = listaPedidos;
+	    listarProductos();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 778, 488);
 		contentPane = new JPanel();
@@ -115,25 +119,25 @@ public class VPedidos extends JFrame implements ActionListener {
 				Panel_Cliente.add(lblDireccin);
 			}
 			{
-				textField = new JTextField();
-				textField.setEditable(false);
-				textField.setBounds(76, 58, 244, 18);
-				Panel_Cliente.add(textField);
-				textField.setColumns(10);
+				txtNom = new JTextField();
+				txtNom.setEditable(false);
+				txtNom.setBounds(76, 58, 244, 18);
+				Panel_Cliente.add(txtNom);
+				txtNom.setColumns(10);
 			}
 			{
-				textField_1 = new JTextField();
-				textField_1.setEditable(false);
-				textField_1.setColumns(10);
-				textField_1.setBounds(76, 99, 171, 18);
-				Panel_Cliente.add(textField_1);
+				txtTelefono = new JTextField();
+				txtTelefono.setEditable(false);
+				txtTelefono.setColumns(10);
+				txtTelefono.setBounds(76, 99, 171, 18);
+				Panel_Cliente.add(txtTelefono);
 			}
 			{
-				textField_2 = new JTextField();
-				textField_2.setEditable(false);
-				textField_2.setColumns(10);
-				textField_2.setBounds(76, 121, 284, 18);
-				Panel_Cliente.add(textField_2);
+				txtDireccion = new JTextField();
+				txtDireccion.setEditable(false);
+				txtDireccion.setColumns(10);
+				txtDireccion.setBounds(76, 121, 284, 18);
+				Panel_Cliente.add(txtDireccion);
 			}
 			{
 				lblDni = new JLabel("DNI:");
@@ -141,11 +145,11 @@ public class VPedidos extends JFrame implements ActionListener {
 				Panel_Cliente.add(lblDni);
 			}
 			{
-				textField_3 = new JTextField();
-				textField_3.setEditable(false);
-				textField_3.setColumns(10);
-				textField_3.setBounds(76, 80, 121, 18);
-				Panel_Cliente.add(textField_3);
+				txtDNI = new JTextField();
+				txtDNI.setEditable(false);
+				txtDNI.setColumns(10);
+				txtDNI.setBounds(76, 80, 121, 18);
+				Panel_Cliente.add(txtDNI);
 			}
 			{
 				cbCliente = new JComboBox();
@@ -189,6 +193,7 @@ public class VPedidos extends JFrame implements ActionListener {
 			}
 			{
 				bt_buscar_pProducto = new JButton("BUSCAR");
+				bt_buscar_pProducto.addActionListener(this);
 				bt_buscar_pProducto.setBounds(173, 29, 84, 20);
 				Panel_Producto.add(bt_buscar_pProducto);
 			}
@@ -204,9 +209,10 @@ public class VPedidos extends JFrame implements ActionListener {
 				txt_cant_Pedido.setColumns(10);
 			}
 			{
-				btnNewButton = new JButton("Agregar");
-				btnNewButton.setBounds(130, 245, 84, 20);
-				Panel_Producto.add(btnNewButton);
+				bt_AgregarProducto = new JButton("Agregar");
+				bt_AgregarProducto.addActionListener(this);
+				bt_AgregarProducto.setBounds(130, 245, 84, 20);
+				Panel_Producto.add(bt_AgregarProducto);
 			}
 		}
 		{
@@ -274,6 +280,12 @@ public class VPedidos extends JFrame implements ActionListener {
 
 	}
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == bt_buscar_pProducto) {
+			do_bt_buscar_pProducto_actionPerformed(e);
+		}
+		if (e.getSource() == bt_AgregarProducto) {
+			do_bt_AgregarProducto_actionPerformed(e);
+		}
 		if (e.getSource() == bt_buscar_pedido) {
 			do_bt_buscar_pedido_actionPerformed(e);
 		}
@@ -281,53 +293,230 @@ public class VPedidos extends JFrame implements ActionListener {
 			do_bt_total_2_actionPerformed(e);
 		}
 	}
+	
+	public void listarProductos() {
+
+	    DefaultTableModel modelo =
+	        (DefaultTableModel) table.getModel();
+
+	    modelo.setRowCount(0);
+
+	    for(Producto p : listaProductos) {
+
+	        modelo.addRow(new Object[] {
+	            p.getIdProducto(),
+	            p.getNombre(),
+	            p.getPrecio(),
+	            p.getStock()
+	        });
+	    }
+	}
+	
+	
 	protected void do_bt_total_2_actionPerformed(ActionEvent e) {
+		
 	}
 	protected void do_bt_buscar_pedido_actionPerformed(ActionEvent e) {
 		
 		String tipoBusqueda = cbCliente.getSelectedItem().toString();
-		String valor = txtDni_pedido.getText().trim();
-		boolean encontrado = false;
-		if(tipoBusqueda.equals("DNI")) {
+	    String valor = txtDni_pedido.getText().trim();
 
-		    for(Cliente c : listaClientes) {
+	    // Validar campo vacío
+	    if (valor.isEmpty()) {
 
-		        if(c.getDni().equals(valor)) {
+	        JOptionPane.showMessageDialog(this,
+	                "Ingrese un dato para buscar");
 
-		        	textField.setText(c.getNombre());
-	                textField_1.setText(c.getTelefono());
-	                textField_2.setText(c.getDireccion());
+	        return;
+	    }
 
-	                encontrado = true;
+	    // Limpiar campos antes de buscar
+	    txtNom.setText("");
+	    txtTelefono.setText("");
+	    txtDireccion.setText("");
+
+	    Cliente clienteEncontrado = null;
+
+	    if (tipoBusqueda.equals("DNI")) {
+
+	        for (Cliente c : listaClientes) {
+
+	            if (c.getDni().equals(valor)) {
+
+	                clienteEncontrado = c;
 	                break;
-		        }
-		    }
+	            }
+	        }
 
-		} else if(tipoBusqueda.equals("Nombre")) {
+	    } else if (tipoBusqueda.equals("Nombre")) {
 
-		    for(Cliente c : listaClientes) {
+	        for (Cliente c : listaClientes) {
 
-		        if(c.getNombre().equalsIgnoreCase(valor)) {
+	            if (c.getNombre().equalsIgnoreCase(valor)) {
 
-		        	textField.setText(c.getNombre());
-	                textField_1.setText(c.getTelefono());
-	                textField_2.setText(c.getDireccion());
-
-	                encontrado = true;
+	                clienteEncontrado = c;
 	                break;
-		        }
-		    }
-		}
-		
-		if(!encontrado) {
+	            }
+	        }
+	    }
+
+	    if (clienteEncontrado != null) {
+
+	        txtNom.setText(clienteEncontrado.getNombre());
+	        txtTelefono.setText(clienteEncontrado.getTelefono());
+	        txtDireccion.setText(clienteEncontrado.getDireccion());
+
+	    } else {
 
 	        JOptionPane.showMessageDialog(this,
 	                "Cliente no encontrado");
-
-	        textField.setText("");
-	        textField_1.setText("");
-	        textField_2.setText("");
 	    }
 
+	}
+	protected void do_bt_AgregarProducto_actionPerformed(ActionEvent e) {
+		
+		int fila = table.getSelectedRow();
+		
+		if (fila == -1) {
+			JOptionPane.showMessageDialog(this, "Seleccione un producto");
+			return;
+		}
+		
+		String textoCantidad = txt_cant_Pedido.getText().trim();
+		
+		if (textoCantidad.isEmpty()) {
+
+	        JOptionPane.showMessageDialog(this,
+	                "Ingrese una cantidad");
+
+	        return;
+	    }
+		
+		int cantidad;
+
+	    try {
+
+	        cantidad = Integer.parseInt(textoCantidad);
+
+	    } catch (NumberFormatException ex) {
+
+	        JOptionPane.showMessageDialog(this,
+	                "La cantidad debe ser numérica");
+
+	        return;
+	    }
+	    
+	    if (cantidad <= 0) {
+
+	        JOptionPane.showMessageDialog(this,
+	                "La cantidad debe ser mayor a cero");
+
+	        return;
+	    }
+
+	    int idProducto = (Integer) table.getValueAt(fila, 0);
+	    
+	    Producto productoseleccionado = null;
+	    
+	    for (Producto p : listaProductos) {
+
+	        if (p.getIdProducto() == idProducto) {
+
+	            productoseleccionado = p;
+	            break;
+	        }
+	    }
+	    
+	    if (productoseleccionado == null) {
+
+	        JOptionPane.showMessageDialog(this,
+	                "Producto no encontrado");
+
+	        return;
+	    }
+
+	    if (cantidad > productoseleccionado.getStock()) {
+
+	        JOptionPane.showMessageDialog(this,
+	                "Stock insuficiente");
+
+	        return;
+	    }
+	    
+	    DetallePedido detalle =
+	            new DetallePedido(productoseleccionado, cantidad);
+
+	    listaDetallesPedido.add(detalle);
+
+	    DefaultTableModel modelo =
+	            (DefaultTableModel) table_1.getModel();
+
+	    modelo.addRow(new Object[] {
+	            productoseleccionado.getNombre(),
+	            cantidad,
+	            productoseleccionado.getPrecio(),
+	            detalle.getSubtotal()
+	    });
+
+	    double total = 0;
+
+	    for (DetallePedido d : listaDetallesPedido) {
+
+	        total += d.getSubtotal();
+	    }
+
+	    txt_total_pedido.setText(String.format("%.2f", total));
+
+	    txt_cant_Pedido.setText("");
+	    txt_cant_Pedido.requestFocus();
+		
+	}
+	protected void do_bt_buscar_pProducto_actionPerformed(ActionEvent e) {
+		String nombre = txtBuscar_pedido_producto.getText().trim();
+
+	    DefaultTableModel modelo =
+	            (DefaultTableModel) table.getModel();
+
+	    modelo.setRowCount(0);
+
+	    // Si no escribe nada, muestra todos
+	    if(nombre.isEmpty()) {
+
+	        for(Producto p : listaProductos) {
+
+	            modelo.addRow(new Object[] {
+	                    p.getIdProducto(),
+	                    p.getNombre(),
+	                    p.getPrecio(),
+	                    p.getStock()
+	            });
+	        }
+
+	        return;
+	    }
+
+	    boolean encontrado = false;
+
+	    for(Producto p : listaProductos) {
+
+	        if(p.getNombre().toLowerCase()
+	                .contains(nombre.toLowerCase())) {
+
+	            modelo.addRow(new Object[] {
+	                    p.getIdProducto(),
+	                    p.getNombre(),
+	                    p.getPrecio(),
+	                    p.getStock()
+	            });
+
+	            encontrado = true;
+	        }
+	    }
+
+	    if(!encontrado) {
+
+	        JOptionPane.showMessageDialog(this,
+	                "Producto no encontrado");
+	    }
 	}
 }
