@@ -82,6 +82,7 @@ public class VMain extends JFrame implements ActionListener {
 		}
 		{
 			bt_Reportes = new JButton("Reportes");
+			bt_Reportes.addActionListener(this);
 			bt_Reportes.setBounds(71, 199, 97, 20);
 			contentPane.add(bt_Reportes);
 		}
@@ -98,10 +99,14 @@ public class VMain extends JFrame implements ActionListener {
 		}
 		listaClientes = new ArrayList<>();
 		listaProductos = new ArrayList<>();
+		listaPedidos = new ArrayList<>();
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == bt_Reportes) {
+			do_bt_Reportes_actionPerformed(e);
+		}
 		if (e.getSource() == btHistorial) {
 			do_btHistorial_actionPerformed(e);
 		}
@@ -114,23 +119,33 @@ public class VMain extends JFrame implements ActionListener {
 		if (e.getSource() == bt_Productos) {
 			do_bt_Productos_actionPerformed(e);
 		}
+		
 	}
 	protected void do_bt_Productos_actionPerformed(ActionEvent e) {
-		V1 ventanaproducto = new V1(listaProductos);
+		V1 ventanaproducto = new V1(listaProductos,this);
+		setEnabled(false);
 		ventanaproducto.setVisible(true);
 	}
 	protected void do_bt_Pedidos_actionPerformed(ActionEvent e) {
 		
-		VPedidos ventanapedidos = new VPedidos(listaClientes,listaProductos);
+		VPedidos ventanapedidos = new VPedidos(listaClientes,listaProductos,listaPedidos,this);
+		setEnabled(false);
 		ventanapedidos.setVisible(true);
 		
 	}
 	protected void do_bt_Clientes_actionPerformed(ActionEvent e) {
-		v2 ventanacliente = new v2(listaClientes);
+		v2 ventanacliente = new v2(listaClientes, this);
+		setEnabled(false);
 		ventanacliente.setVisible(true);
 	}
 	protected void do_btHistorial_actionPerformed(ActionEvent e) {
-		VHistorial vhistorial = new VHistorial(listaPedidos);
+		VHistorial vhistorial = new VHistorial(listaPedidos,this);
+		setEnabled(false);
 		vhistorial.setVisible(true);
+	}
+	protected void do_bt_Reportes_actionPerformed(ActionEvent e) {
+		VReportes vreportes = new VReportes(listaPedidos,this);
+		setEnabled(false);
+		vreportes.setVisible(true);
 	}
 }

@@ -24,6 +24,7 @@ import clases.Producto;
 
 import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
@@ -65,20 +66,23 @@ public class VPedidos extends JFrame implements ActionListener {
 	private ArrayList<Producto> listaProductos;
 	private ArrayList<Pedido> listaPedidos;
 	private ArrayList<DetallePedido> listaDetallesPedido;
+	private JFrame ventanaPrincipal;
 	private JLabel lblDni;
 	private JTextField txtDNI;
+	private Cliente clienteSeleccionado;
 	private JComboBox cbCliente;
 
 	/**
 	 * Create the frame.
 	 */
 	public VPedidos(ArrayList<Cliente> listaClientes,
-	        ArrayList<Producto> listaProductos,ArrayList<Pedido> listaPedidos) {
+	        ArrayList<Producto> listaProductos,ArrayList<Pedido> listaPedidos,JFrame ventanaPrincipal) {
 		setTitle("PEDIDOS");
 		this.listaClientes = listaClientes;
 	    this.listaProductos = listaProductos;
 	    this.listaPedidos = listaPedidos;
-	    listarProductos();
+	    this.ventanaPrincipal = ventanaPrincipal;
+	    listaDetallesPedido = new ArrayList<>();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 778, 488);
 		contentPane = new JPanel();
@@ -251,11 +255,13 @@ public class VPedidos extends JFrame implements ActionListener {
 			}
 			{
 				bt_EliminarItem = new JButton("Eliminar Item");
+				bt_EliminarItem.addActionListener(this);
 				bt_EliminarItem.setBounds(240, 214, 100, 18);
 				Panel_DetallePedido.add(bt_EliminarItem);
 			}
 			{
 				bt_Limpiar = new JButton("Limpiar");
+				bt_Limpiar.addActionListener(this);
 				bt_Limpiar.setBounds(142, 213, 88, 21);
 				Panel_DetallePedido.add(bt_Limpiar);
 			}
@@ -268,18 +274,32 @@ public class VPedidos extends JFrame implements ActionListener {
 		}
 		{
 			bt_Cancelar_pedido = new JButton("Cancelar");
+			bt_Cancelar_pedido.addActionListener(this);
 			bt_Cancelar_pedido.setBounds(438, 366, 84, 20);
 			contentPane.add(bt_Cancelar_pedido);
 		}
 		{
 			bt_Salir_pedido = new JButton("Salir");
+			bt_Salir_pedido.addActionListener(this);
 			bt_Salir_pedido.setBounds(628, 366, 84, 20);
 			contentPane.add(bt_Salir_pedido);
 		}
-		
+	    listarProductos();
 
 	}
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == bt_Salir_pedido) {
+			do_bt_Salir_pedido_actionPerformed(e);
+		}
+		if (e.getSource() == bt_Cancelar_pedido) {
+			do_bt_Cancelar_pedido_actionPerformed(e);
+		}
+		if (e.getSource() == bt_EliminarItem) {
+			do_bt_EliminarItem_actionPerformed(e);
+		}
+		if (e.getSource() == bt_Limpiar) {
+			do_bt_Limpiar_actionPerformed(e);
+		}
 		if (e.getSource() == bt_buscar_pProducto) {
 			do_bt_buscar_pProducto_actionPerformed(e);
 		}
@@ -314,63 +334,80 @@ public class VPedidos extends JFrame implements ActionListener {
 	
 	
 	protected void do_bt_total_2_actionPerformed(ActionEvent e) {
-		
-	}
-	protected void do_bt_buscar_pedido_actionPerformed(ActionEvent e) {
-		
-		String tipoBusqueda = cbCliente.getSelectedItem().toString();
-	    String valor = txtDni_pedido.getText().trim();
-
-	    // Validar campo vacío
-	    if (valor.isEmpty()) {
-
+		if (clienteSeleccionado == null) {
 	        JOptionPane.showMessageDialog(this,
-	                "Ingrese un dato para buscar");
-
+	                "Debe buscar y seleccionar un cliente antes de generar el pedido");
 	        return;
 	    }
 
-	    // Limpiar campos antes de buscar
-	    txtNom.setText("");
-	    txtTelefono.setText("");
-	    txtDireccion.setText("");
-
-	    Cliente clienteEncontrado = null;
-
-	    if (tipoBusqueda.equals("DNI")) {
-
-	        for (Cliente c : listaClientes) {
-
-	            if (c.getDni().equals(valor)) {
-
-	                clienteEncontrado = c;
-	                break;
-	            }
-	        }
-
-	    } else if (tipoBusqueda.equals("Nombre")) {
-
-	        for (Cliente c : listaClientes) {
-
-	            if (c.getNombre().equalsIgnoreCase(valor)) {
-
-	                clienteEncontrado = c;
-	                break;
-	            }
-	        }
-	    }
-
-	    if (clienteEncontrado != null) {
-
-	        txtNom.setText(clienteEncontrado.getNombre());
-	        txtTelefono.setText(clienteEncontrado.getTelefono());
-	        txtDireccion.setText(clienteEncontrado.getDireccion());
-
-	    } else {
-
+	    if (listaDetallesPedido.isEmpty()) {
 	        JOptionPane.showMessageDialog(this,
-	                "Cliente no encontrado");
+	                "Debe agregar al menos un producto al pedido");
+	        return;
 	    }
+
+	    int idPedido = listaPedidos.size() + 1;
+
+	    Pedido nuevoPedido = new Pedido(
+	            idPedido,
+	            java.time.LocalDate.now(),
+	            "Pendiente",
+	            clienteSeleccionado,
+	            new ArrayList<>(listaDetallesPedido)
+	    );
+
+	    listaPedidos.add(nuevoPedido);
+
+	    JOptionPane.showMessageDialog(this,
+	            "Pedido generado correctamente");
+
+	    limpiarFormularioPedido();
+		}
+		
+	
+	protected void do_bt_buscar_pedido_actionPerformed(ActionEvent e) {
+		
+		 String tipoBusqueda = cbCliente.getSelectedItem().toString();
+		    String valor = txtDni_pedido.getText().trim();
+
+		    if (valor.isEmpty()) {
+		        JOptionPane.showMessageDialog(this,
+		                "Ingrese un dato para buscar al cliente");
+		        return;
+		    }
+
+		    clienteSeleccionado = null;
+
+		    for (Cliente c : listaClientes) {
+
+		        if (tipoBusqueda.equals("DNI") && c.getDni().equals(valor)) {
+		            clienteSeleccionado = c;
+		            break;
+		        }
+
+		        if (tipoBusqueda.equals("Nombre") && c.getNombre().equalsIgnoreCase(valor)) {
+		            clienteSeleccionado = c;
+		            break;
+		        }
+		    }
+
+		    if (clienteSeleccionado != null) {
+		        txtDNI.setText(clienteSeleccionado.getDni());
+		        txtNom.setText(clienteSeleccionado.getNombre());
+		        txtTelefono.setText(clienteSeleccionado.getTelefono());
+		        txtDireccion.setText(clienteSeleccionado.getDireccion());
+
+		        JOptionPane.showMessageDialog(this,
+		                "Cliente encontrado correctamente");
+		    } else {
+		        JOptionPane.showMessageDialog(this,
+		                "Cliente no encontrado");
+
+		        txtDNI.setText("");
+		        txtNom.setText("");
+		        txtTelefono.setText("");
+		        txtDireccion.setText("");
+		    }
 
 	}
 	protected void do_bt_AgregarProducto_actionPerformed(ActionEvent e) {
@@ -518,5 +555,106 @@ public class VPedidos extends JFrame implements ActionListener {
 	        JOptionPane.showMessageDialog(this,
 	                "Producto no encontrado");
 	    }
+	}
+	protected void do_bt_Limpiar_actionPerformed(ActionEvent e) {
+		listaDetallesPedido.clear();
+
+	    DefaultTableModel modelo =
+	            (DefaultTableModel) table_1.getModel();
+
+	    modelo.setRowCount(0);
+
+	    txt_total_pedido.setText("");
+	    txt_cant_Pedido.setText("");
+
+	    JOptionPane.showMessageDialog(this,
+	            "Detalle del pedido limpiado");
+		
+	}
+	protected void do_bt_EliminarItem_actionPerformed(ActionEvent e) {
+		
+		 int fila = table_1.getSelectedRow();
+
+		    if (fila == -1) {
+
+		        JOptionPane.showMessageDialog(this,
+		                "Seleccione un producto del detalle");
+
+		        return;
+		    }
+
+		    // Eliminar del ArrayList
+		    listaDetallesPedido.remove(fila);
+
+		    // Eliminar de la tabla
+		    DefaultTableModel modelo =
+		            (DefaultTableModel) table_1.getModel();
+
+		    modelo.removeRow(fila);
+
+		    // Recalcular total
+		    double total = 0;
+
+		    for (DetallePedido d : listaDetallesPedido) {
+		        total += d.getSubtotal();
+		    }
+
+		    txt_total_pedido.setText(
+		            String.format("%.2f", total));
+
+		    JOptionPane.showMessageDialog(this,
+		            "Producto eliminado del pedido");
+	}
+	protected void do_bt_Cancelar_pedido_actionPerformed(ActionEvent e) {
+		int op = JOptionPane.showConfirmDialog(
+	            this,
+	            "¿Desea cancelar el registro actual del pedido?",
+	            "Cancelar pedido",
+	            JOptionPane.YES_NO_OPTION
+	    );
+
+	    if (op != JOptionPane.YES_OPTION) {
+	        return;
+	    }
+
+	    limpiarFormularioPedido();
+
+	    JOptionPane.showMessageDialog(this,
+	            "Se canceló el pedido en edición");
+	}
+	protected void do_bt_Salir_pedido_actionPerformed(ActionEvent e) {
+		ventanaPrincipal.setEnabled(true);
+		dispose();
+	}
+	
+	
+	private void limpiarFormularioPedido() {
+
+	    // limpiar búsqueda / cliente
+	    txtDni_pedido.setText("");
+	    txtDNI.setText("");
+	    txtNom.setText("");
+	    txtTelefono.setText("");
+	    txtDireccion.setText("");
+
+	    // limpiar búsqueda de producto y cantidad
+	    txtBuscar_pedido_producto.setText("");
+	    txt_cant_Pedido.setText("");
+
+	    // limpiar total
+	    txt_total_pedido.setText("0.00");
+
+	    // limpiar cliente seleccionado
+	    clienteSeleccionado = null;
+
+	    // limpiar detalle del pedido en memoria
+	    listaDetallesPedido.clear();
+
+	    // limpiar tabla detalle
+	    DefaultTableModel modeloDetalle = (DefaultTableModel) table_1.getModel();
+	    modeloDetalle.setRowCount(0);
+
+	    // opcional: volver a listar productos
+	    listarProductos();
 	}
 }

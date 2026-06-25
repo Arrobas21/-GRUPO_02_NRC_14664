@@ -8,6 +8,7 @@ import clases.DetallePedido;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import clases.DetallePedido;
 import clases.Producto;
@@ -24,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.awt.Font;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class V1 extends JFrame implements ActionListener {
 
@@ -34,20 +36,23 @@ public class V1 extends JFrame implements ActionListener {
 	private JTextField txtProducto;
 	private JLabel lblNewLabel_2;
 	private JTextField txtPrecio;
-	private JTextArea textArea;
 	private JLabel lblNewLabel_3;
 	private JTextField txtCant;
 	private JButton btnReportar;
 	private JButton btnAdicionar;
 	private JButton btnBuscar;
 	private ArrayList<Producto> listaProductos;
+	private DefaultTableModel modelo;
+	private JFrame ventanaPrincipal;
 	/**
 	 * Create the frame.
 	 */
-	public V1(ArrayList<Producto> listaProductos) {
+	public V1(ArrayList<Producto> listaProductos, JFrame ventanaPrincipal) {
 		this.listaProductos= listaProductos;
+		this.ventanaPrincipal = ventanaPrincipal;
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 506, 324);
+		setBounds(100, 100, 509, 357);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -125,14 +130,40 @@ public class V1 extends JFrame implements ActionListener {
 			scrollPane = new JScrollPane();
 			scrollPane.setBounds(24, 132, 458, 134);
 			contentPane.add(scrollPane);
+
+			table = new JTable();
+			table.setDefaultEditor(Object.class, null); // no editable
+			table.setAutoCreateRowSorter(true); // ordenar columnas
+
+			modelo = new DefaultTableModel(
+			    new Object[][] {},
+			    new String[] {"ID", "Producto", "Precio", "Stock"}
+			) {
+			    private static final long serialVersionUID = 1L;
+
+			    @Override
+			    public boolean isCellEditable(int row, int column) {
+			        return false;
+			    }
+			};
+			table.setModel(modelo);
+			scrollPane.setViewportView(table);
 			{
-				textArea = new JTextArea();
-				scrollPane.setViewportView(textArea);
+				bt_Salir = new JButton("Salir");
+				bt_Salir.addActionListener(this);
+				bt_Salir.setBounds(200, 287, 84, 20);
+				contentPane.add(bt_Salir);
 			}
+
+			// Si quieres que al abrir la ventana ya se muestren los productos:
+			listarProductos();
 		}
 
 	}
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == bt_Salir) {
+			do_bt_Salir_actionPerformed(e);
+		}
 		if (e.getSource() == btnModificar) {
 			do_btnModificar_actionPerformed(e);
 		}
@@ -154,6 +185,8 @@ public class V1 extends JFrame implements ActionListener {
 		private JButton btnEliminar;
 		private JButton btnModificar;
 		private JScrollPane scrollPane;
+		private JTable table;
+		private JButton bt_Salir;
 		
 		public Producto buscar(String nombre) {
 		    for (Producto p : listaProductos) {
@@ -176,20 +209,13 @@ public class V1 extends JFrame implements ActionListener {
 		protected void do_btnReportar_actionPerformed(ActionEvent e) {
 		
 		
-		String reporte = "";
-		
-		if (listaProductos.isEmpty()) {
-			textArea.setText("");
-			JOptionPane.showMessageDialog(this, "No hay productos agregados");
-			return;
-		}
-	    for (Producto p : listaProductos) { 
-	        reporte += "Producto: " + p.getNombre() +
-	                   " | Precio: " + p.getPrecio() +
-	                   " | Cantidad: " + p.getStock() + "\n";
-	    }
+			if (listaProductos.isEmpty()) {
+		        modelo.setRowCount(0);
+		        JOptionPane.showMessageDialog(this, "No hay productos agregados");
+		        return;
+		    }
 
-	    textArea.setText(reporte);
+		    listarProductos();
 		
 	}
 	protected void do_btnAdicionar_actionPerformed(ActionEvent e) {
@@ -245,33 +271,44 @@ public class V1 extends JFrame implements ActionListener {
 	    listaProductos.add(p);
 
 	    JOptionPane.showMessageDialog(this, "Producto agregado correctamente");
+	    listarProductos();
+	    txtProducto.setText("");
+	    txtPrecio.setText("");
+	    txtCant.setText("");
+	    txtProducto.requestFocus();
 		   	
 	}
 	
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 		String busqueda = txtProducto.getText().trim();
 
-		if (busqueda.isEmpty()) {
-		    JOptionPane.showMessageDialog(this, "Ingrese nombre o ID");
-		    return;
-		}
+	    if (busqueda.isEmpty()) {
+	        JOptionPane.showMessageDialog(this,
+	                "Ingrese nombre o ID del producto para buscar.");
+	        return;
+	    }
 
-		Producto p = null;
+	    Producto p = buscarProducto(busqueda);
 
-		// Verificar si es número
-		if (busqueda.matches("\\d+")) {
-		    p = buscar(Integer.parseInt(busqueda)); // usa método por ID
-		} else {
-		    p = buscar(busqueda); // usa método por nombre
-		}
+	    if (p == null) {
+	        JOptionPane.showMessageDialog(this,
+	                "Producto no encontrado.");
+	        return;
+	    }
 
-		if (p != null) {
-		    txtProducto.setText(p.getNombre());
-		    txtPrecio.setText(String.valueOf(p.getPrecio()));
-		    txtCant.setText(String.valueOf(p.getStock()));
-		} else {
-		    JOptionPane.showMessageDialog(this, "Producto no encontrado");
-		}
+	    // llenar campos
+	    txtProducto.setText(p.getNombre());
+	    txtPrecio.setText(String.valueOf(p.getPrecio()));
+	    txtCant.setText(String.valueOf(p.getStock()));
+
+	    // filtrar tabla: mostrar solo el producto encontrado
+	    modelo.setRowCount(0);
+	    modelo.addRow(new Object[] {
+	        p.getIdProducto(),
+	        p.getNombre(),
+	        p.getPrecio(),
+	        p.getStock()
+	    });
 	
 	}
 
@@ -295,6 +332,7 @@ public class V1 extends JFrame implements ActionListener {
 			        String.valueOf(p.getIdProducto()).equals(busqueda)) {
 				listaProductos.remove(i);
 				JOptionPane.showMessageDialog(this, "Producto eliminado");
+				listarProductos();
 
 		        encontrado = true;
 		        break;
@@ -305,6 +343,9 @@ public class V1 extends JFrame implements ActionListener {
 		    txtPrecio.setText("");
 		}
 	}
+	
+	
+	
 	protected void do_btnModificar_actionPerformed(ActionEvent e) {
 		// Obtener lo que el usuario escribió en el campo de texto
 		String busqueda = txtProducto.getText().trim();
@@ -350,6 +391,7 @@ public class V1 extends JFrame implements ActionListener {
 
 		            // Mostrar mensaje de éxito
 		            JOptionPane.showMessageDialog(this, "Cantidad modificada correctamente");
+		            listarProductos();
 
 		            // Marcar que sí se encontró el producto
 		            encontrado = true;
@@ -371,5 +413,32 @@ public class V1 extends JFrame implements ActionListener {
 		}
 
 		}
+	
+	private void listarProductos() {
+	    modelo.setRowCount(0);
+
+	    for (Producto p : listaProductos) {
+	        modelo.addRow(new Object[] {
+	            p.getIdProducto(),
+	            p.getNombre(),
+	            p.getPrecio(),
+	            p.getStock()
+	        });
+	    }
+	}
+	protected void do_bt_Salir_actionPerformed(ActionEvent e) {
+		ventanaPrincipal.setEnabled(true);
+		dispose();
+	}
+	
+	private Producto buscarProducto(String busqueda) {
+	    for (Producto p : listaProductos) {
+	        if (p.getNombre().equalsIgnoreCase(busqueda) ||
+	            String.valueOf(p.getIdProducto()).equals(busqueda)) {
+	            return p;
+	        }
+	    }
+	    return null;
+	}
 	}
 

@@ -1,22 +1,20 @@
 package gui;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import clases.Cliente;
-import clases.DetallePedido;
-import clases.Producto;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -39,26 +37,34 @@ public class v2 extends JFrame implements ActionListener {
 	private JButton btnBuscar;
 	private JButton btnEliminar;
 	private JButton btnModificar;
-	private JTextArea txtS;
 	private ArrayList<Cliente> listaClientes;
 	private JTextField txtDni;
 	private JLabel lblDni;
+	private JButton bt_Salir;
+	private JFrame ventanaPrincipal;
+	private JScrollPane scrollPane;
+	private JTable table;
+	private DefaultTableModel modelo;
 
 	/**
 	 * Create the frame.
 	 */
-	public v2(ArrayList<Cliente> listaClientes) {
+	public v2(ArrayList<Cliente> listaClientes,JFrame ventanaPrincipal) {
 		this.listaClientes = listaClientes;
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 530, 331);
+		this.ventanaPrincipal = ventanaPrincipal;
+		
+		setTitle("CLIENTES");
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 560, 390);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+
 		{
 			lblSistemaDeClientes = new JLabel("SISTEMA DE CLIENTES");
 			lblSistemaDeClientes.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			lblSistemaDeClientes.setBounds(176, 10, 170, 12);
+			lblSistemaDeClientes.setBounds(180, 10, 170, 12);
 			contentPane.add(lblSistemaDeClientes);
 		}
 		{
@@ -69,29 +75,40 @@ public class v2 extends JFrame implements ActionListener {
 		{
 			txtNombre = new JTextField();
 			txtNombre.setColumns(10);
-			txtNombre.setBounds(56, 51, 84, 18);
+			txtNombre.setBounds(70, 51, 100, 18);
 			contentPane.add(txtNombre);
 		}
 		{
-			lblNewLabel_1 = new JLabel("Telefono:");
-			lblNewLabel_1.setBounds(270, 57, 56, 12);
+			lblDni = new JLabel("DNI:");
+			lblDni.setBounds(180, 54, 40, 12);
+			contentPane.add(lblDni);
+		}
+		{
+			txtDni = new JTextField();
+			txtDni.setColumns(10);
+			txtDni.setBounds(210, 51, 90, 18);
+			contentPane.add(txtDni);
+		}
+		{
+			lblNewLabel_1 = new JLabel("Teléfono:");
+			lblNewLabel_1.setBounds(310, 54, 60, 12);
 			contentPane.add(lblNewLabel_1);
 		}
 		{
 			txtTelefono = new JTextField();
 			txtTelefono.setColumns(10);
-			txtTelefono.setBounds(324, 54, 96, 18);
+			txtTelefono.setBounds(375, 51, 120, 18);
 			contentPane.add(txtTelefono);
 		}
 		{
 			lblNewLabel_2 = new JLabel("Dirección:");
-			lblNewLabel_2.setBounds(56, 95, 63, 12);
+			lblNewLabel_2.setBounds(10, 95, 63, 12);
 			contentPane.add(lblNewLabel_2);
 		}
 		{
 			txtDireccion = new JTextField();
 			txtDireccion.setColumns(10);
-			txtDireccion.setBounds(129, 92, 291, 18);
+			txtDireccion.setBounds(80, 92, 415, 18);
 			contentPane.add(txtDireccion);
 		}
 		{
@@ -103,20 +120,14 @@ public class v2 extends JFrame implements ActionListener {
 		{
 			btnAdicionar = new JButton("Adicionar");
 			btnAdicionar.addActionListener(this);
-			btnAdicionar.setBounds(116, 127, 90, 20);
+			btnAdicionar.setBounds(106, 127, 90, 20);
 			contentPane.add(btnAdicionar);
 		}
 		{
 			btnBuscar = new JButton("Buscar");
 			btnBuscar.addActionListener(this);
-			btnBuscar.setBounds(210, 127, 84, 20);
+			btnBuscar.setBounds(208, 127, 84, 20);
 			contentPane.add(btnBuscar);
-		}
-		{
-			btnEliminar = new JButton("Eliminar");
-			btnEliminar.addActionListener(this);
-			btnEliminar.setBounds(410, 127, 84, 20);
-			contentPane.add(btnEliminar);
 		}
 		{
 			btnModificar = new JButton("Modificar");
@@ -125,24 +136,49 @@ public class v2 extends JFrame implements ActionListener {
 			contentPane.add(btnModificar);
 		}
 		{
-			txtS = new JTextArea();
-			txtS.setBounds(10, 157, 484, 124);
-			contentPane.add(txtS);
+			btnEliminar = new JButton("Eliminar");
+			btnEliminar.addActionListener(this);
+			btnEliminar.setBounds(412, 127, 84, 20);
+			contentPane.add(btnEliminar);
 		}
 		{
-			txtDni = new JTextField();
-			txtDni.setColumns(10);
-			txtDni.setBounds(176, 51, 84, 18);
-			contentPane.add(txtDni);
+			scrollPane = new JScrollPane();
+			scrollPane.setBounds(10, 165, 515, 135);
+			contentPane.add(scrollPane);
+
+			table = new JTable();
+			table.setAutoCreateRowSorter(true);
+			table.setDefaultEditor(Object.class, null);
+
+			modelo = new DefaultTableModel(
+					new Object[][] {},
+					new String[] {"ID", "Nombre", "DNI", "Teléfono", "Dirección"}) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
+
+			table.setModel(modelo);
+			scrollPane.setViewportView(table);
 		}
 		{
-			lblDni = new JLabel("DNI:");
-			lblDni.setBounds(150, 54, 63, 12);
-			contentPane.add(lblDni);
+			bt_Salir = new JButton("Salir");
+			bt_Salir.addActionListener(this);
+			bt_Salir.setBounds(220, 315, 84, 20);
+			contentPane.add(bt_Salir);
 		}
 
+		// Mostrar clientes al abrir
+		listarClientesEnTabla();
 	}
+
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == bt_Salir) {
+			do_bt_Salir_actionPerformed(e);
+		}
 		if (e.getSource() == btnBuscar) {
 			do_btnBuscar_actionPerformed(e);
 		}
@@ -159,289 +195,287 @@ public class v2 extends JFrame implements ActionListener {
 			do_btnEliminar_actionPerformed(e);
 		}
 	}
-	
-	public void listarClientes() {
-	    txtS.setText(""); // limpiar antes de mostrar
 
-	    for (Cliente c : listaClientes) {
-	        txtS.append(
-	            "ID: " + c.getIdCliente() + "\n" +
-	            "Nombre: " + c.getNombre() + "\n" +
-	            "Teléfono: " + c.getTelefono() + "\n" +
-	            "Dirección: " + c.getDireccion() + "\n" +
-	            "--------------------------\n"
-	        );
-	    }
-	}
-	
-	
-	public void guardarClientes() {
+	// =========================
+	// MÉTODOS DE TABLA / APOYO
+	// =========================
 
-	    try {
-
-	        PrintWriter pw =
-	        new PrintWriter(
-	        new FileWriter("clientes.txt"));
-
-	        for (Cliente c : listaClientes) {
-
-	            pw.println(
-	                c.getIdCliente() + ";" +
-	                c.getNombre() + ";" +
-	                c.getDni() + ";" +
-	                c.getTelefono() + ";" +
-	                c.getDireccion()
-	            );
-	        }
-
-	        pw.close();
-
-	    } catch (Exception e) {
-
-	        JOptionPane.showMessageDialog(this,
-	                "Error al guardar archivo");
-
-	    }
-	}
-	
-	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
-		
-		String busqueda = txtNombre.getText().trim();
-
-		if (busqueda.isEmpty()) {
-		    JOptionPane.showMessageDialog(this, "Ingrese nombre, ID o teléfono para eliminar.");
-		    return;
-		}
-
-		boolean encontrado = false;
-
-		for (int i = 0; i < listaClientes.size(); i++) {
-		    Cliente c = listaClientes.get(i);
-
-		    if (c.getNombre().equalsIgnoreCase(busqueda) ||
-		        String.valueOf(c.getIdCliente()).equals(busqueda) ||
-		        c.getTelefono().equals(busqueda)) {
-
-		        int opcion = JOptionPane.showConfirmDialog(
-		            this,
-		            "¿Está seguro de eliminar este cliente?",
-		            "Confirmar eliminación",
-		            JOptionPane.YES_NO_OPTION
-		        );
-
-		        if (opcion != JOptionPane.YES_OPTION) {
-		            return;
-		        }
-
-		        listaClientes.remove(i);
-
-		        JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
-
-		        txtNombre.setText("");
-		        txtTelefono.setText("");
-		        txtDireccion.setText("");
-		        txtS.setText("");
-
-		        listarClientes();
-
-		        encontrado = true;
-		        break;
-		    }
-		}
-
-		if (!encontrado) {
-		    JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
-		}
-	
-	}
-	protected void do_btnModificar_actionPerformed(ActionEvent e) {
-		String busqueda = txtNombre.getText().trim();
-
-		if (busqueda.isEmpty()) {
-		    JOptionPane.showMessageDialog(this, "Ingrese nombre, ID o teléfono para modificar.");
-		    return;
-		}
-
-		boolean encontrado = false;
+	private void listarClientesEnTabla() {
+		modelo.setRowCount(0);
 
 		for (Cliente c : listaClientes) {
-		    if (c.getNombre().equalsIgnoreCase(busqueda) ||
-		        String.valueOf(c.getIdCliente()).equals(busqueda) ||
-		        c.getTelefono().equals(busqueda)) {
-
-		        String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", c.getNombre());
-		        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
-
-		        if (!nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-		            JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras.");
-		            return;
-		        }
-
-		        String nuevoTelefono = JOptionPane.showInputDialog(this, "Nuevo teléfono:", c.getTelefono());
-		        if (nuevoTelefono == null || nuevoTelefono.trim().isEmpty()) return;
-
-		        if (!nuevoTelefono.matches("\\d{9}")) {
-		            JOptionPane.showMessageDialog(this, "El teléfono debe tener 9 dígitos.");
-		            return;
-		        }
-
-		        String nuevaDireccion = JOptionPane.showInputDialog(this, "Nueva dirección:", c.getDireccion());
-		        if (nuevaDireccion == null || nuevaDireccion.trim().isEmpty()) return;
-
-		        c.setNombre(nuevoNombre.trim());
-		        c.setTelefono(nuevoTelefono.trim());
-		        c.setDireccion(nuevaDireccion.trim());
-
-		        JOptionPane.showMessageDialog(this, "Cliente modificado correctamente.");
-
-		        listarClientes();
-
-		        encontrado = true;
-		        break;
-		    }
+			modelo.addRow(new Object[] {
+				c.getIdCliente(),
+				c.getNombre(),
+				c.getDni(),
+				c.getTelefono(),
+				c.getDireccion()
+			});
 		}
-
-		if (!encontrado) {
-		    JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
-		}
-	   
 	}
+
+	private void mostrarClienteEnCampos(Cliente c) {
+		txtNombre.setText(c.getNombre());
+		txtDni.setText(c.getDni());
+		txtTelefono.setText(c.getTelefono());
+		txtDireccion.setText(c.getDireccion());
+	}
+
+	private void limpiarCampos() {
+		txtNombre.setText("");
+		txtDni.setText("");
+		txtTelefono.setText("");
+		txtDireccion.setText("");
+		txtNombre.requestFocus();
+	}
+
+	public void guardarClientes() {
+		try {
+			PrintWriter pw = new PrintWriter(new FileWriter("clientes.txt"));
+
+			for (Cliente c : listaClientes) {
+				pw.println(
+					c.getIdCliente() + ";" +
+					c.getNombre() + ";" +
+					c.getDni() + ";" +
+					c.getTelefono() + ";" +
+					c.getDireccion()
+				);
+			}
+
+			pw.close();
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Error al guardar archivo");
+		}
+	}
+
+	private Cliente buscarCliente(String busqueda) {
+		for (Cliente c : listaClientes) {
+			if (c.getNombre().equalsIgnoreCase(busqueda) ||
+				String.valueOf(c.getIdCliente()).equals(busqueda) ||
+				c.getTelefono().equals(busqueda) ||
+				c.getDni().equals(busqueda)) {
+				return c;
+			}
+		}
+		return null;
+	}
+
+	// =========================
+	// BOTONES
+	// =========================
+
 	protected void do_btnReportar_actionPerformed(ActionEvent e) {
-		
-		String reporte = "";
-		
 		if (listaClientes.isEmpty()) {
-			txtS.setText("");
-			JOptionPane.showMessageDialog(this, "No hay productos agregados");
+			modelo.setRowCount(0);
+			JOptionPane.showMessageDialog(this, "No hay clientes registrados");
 			return;
 		}
-		for (Cliente c : listaClientes) 
-		{
-			reporte += "Cliente: " + c.getNombre() +
-	                   " | Telefóno: " + c.getTelefono() +
-	                   " | Dirección: " + c.getDireccion() + "\n";
-		}
-		txtS.setText(reporte);
-		
+
+		listarClientesEnTabla();
 	}
-	
+
 	protected void do_btnAdicionar_actionPerformed(ActionEvent e) {
-		
 		String dni = txtDni.getText().trim();
 		String nombre = txtNombre.getText().trim();
 		String telefono = txtTelefono.getText().trim();
 		String direccion = txtDireccion.getText().trim();
 
-		if (dni.isEmpty() || nombre.isEmpty() ||
-		    telefono.isEmpty() || direccion.isEmpty()) {
-
-		    JOptionPane.showMessageDialog(this,
-		            "Complete todos los campos");
-		    return;
+		if (dni.isEmpty() || nombre.isEmpty() || telefono.isEmpty() || direccion.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Complete todos los campos");
+			return;
 		}
 
 		// Validar DNI
 		if (!dni.matches("\\d{8}")) {
-
-		    JOptionPane.showMessageDialog(this,
-		            "El DNI debe tener 8 dígitos numéricos");
-		    return;
+			JOptionPane.showMessageDialog(this, "El DNI debe tener 8 dígitos numéricos");
+			return;
 		}
 
 		// Validar nombre
 		if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-
-		    JOptionPane.showMessageDialog(this,
-		            "El nombre solo debe contener letras");
-		    return;
+			JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras");
+			return;
 		}
 
 		// Validar teléfono
 		if (!telefono.matches("\\d{9}")) {
-
-		    JOptionPane.showMessageDialog(this,
-		            "El teléfono debe tener 9 dígitos numéricos");
-		    return;
+			JOptionPane.showMessageDialog(this, "El teléfono debe tener 9 dígitos numéricos");
+			return;
 		}
 
-		// Evitar DNI duplicado
+		// DNI duplicado
 		for (Cliente c : listaClientes) {
-
-		    if (c.getDni().equals(dni)) {
-
-		        JOptionPane.showMessageDialog(this,
-		                "El DNI ya está registrado");
-		        return;
-		    }
+			if (c.getDni().equals(dni)) {
+				JOptionPane.showMessageDialog(this, "El DNI ya está registrado");
+				return;
+			}
 		}
 
-		// Evitar teléfono duplicado
+		// Teléfono duplicado
 		for (Cliente c : listaClientes) {
-
-		    if (c.getTelefono().equals(telefono)) {
-
-		        JOptionPane.showMessageDialog(this,
-		                "El teléfono ya está registrado");
-		        return;
-		    }
+			if (c.getTelefono().equals(telefono)) {
+				JOptionPane.showMessageDialog(this, "El teléfono ya está registrado");
+				return;
+			}
 		}
 
-		// Generar ID automático
 		int idCliente = listaClientes.size() + 1;
 
-		// Crear cliente
-		Cliente nuevo = new Cliente(idCliente,nombre,dni,telefono,direccion);
-
-		// Agregar a lista
+		Cliente nuevo = new Cliente(idCliente, nombre, dni, telefono, direccion);
 		listaClientes.add(nuevo);
-		
+
 		guardarClientes();
+		listarClientesEnTabla();
 
-		JOptionPane.showMessageDialog(this,
-		        "Cliente registrado correctamente");
-
-		// Limpiar campos
-		txtDni.setText("");
-		txtNombre.setText("");
-		txtTelefono.setText("");
-		txtDireccion.setText("");
-
-		txtDni.requestFocus();
+		JOptionPane.showMessageDialog(this, "Cliente registrado correctamente");
+		limpiarCampos();
 	}
+
 	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
 		String busqueda = txtNombre.getText().trim();
 
+		// si txtNombre está vacío, intentar con DNI
 		if (busqueda.isEmpty()) {
-		    JOptionPane.showMessageDialog(this, "Ingrese nombre, ID o teléfono para buscar.");
-		    return;
+			busqueda = txtDni.getText().trim();
 		}
 
-		boolean encontrado = false;
-
-		for (Cliente c : listaClientes) {
-		    if (c.getNombre().equalsIgnoreCase(busqueda) ||
-		        String.valueOf(c.getIdCliente()).equals(busqueda) ||
-		        c.getTelefono().equals(busqueda)) {
-
-		        txtNombre.setText(c.getNombre());
-		        txtTelefono.setText(c.getTelefono());
-		        txtDireccion.setText(c.getDireccion());
-
-		        txtS.setText(
-		            "ID: " + c.getIdCliente() + "\n" +
-		            "Nombre: " + c.getNombre() + "\n" +
-		            "Teléfono: " + c.getTelefono() + "\n" +
-		            "Dirección: " + c.getDireccion()
-		        );
-
-		        encontrado = true;
-		        break;
-		    }
+		// si también está vacío, intentar con teléfono
+		if (busqueda.isEmpty()) {
+			busqueda = txtTelefono.getText().trim();
 		}
 
-		if (!encontrado) {
-		    JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
+		if (busqueda.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Ingrese nombre, DNI, ID o teléfono para buscar.");
+			return;
 		}
+
+		Cliente c = buscarCliente(busqueda);
+
+		if (c == null) {
+			JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
+			return;
+		}
+
+		mostrarClienteEnCampos(c);
+
+		// mostrar solo el cliente encontrado en la tabla
+		modelo.setRowCount(0);
+		modelo.addRow(new Object[] {
+			c.getIdCliente(),
+			c.getNombre(),
+			c.getDni(),
+			c.getTelefono(),
+			c.getDireccion()
+		});
+	}
+
+	protected void do_btnModificar_actionPerformed(ActionEvent e) {
+		String busqueda = txtNombre.getText().trim();
+
+		if (busqueda.isEmpty()) {
+			busqueda = txtDni.getText().trim();
+		}
+		if (busqueda.isEmpty()) {
+			busqueda = txtTelefono.getText().trim();
+		}
+
+		if (busqueda.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Ingrese nombre, DNI o teléfono para modificar.");
+			return;
+		}
+
+		Cliente c = buscarCliente(busqueda);
+
+		if (c == null) {
+			JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
+			return;
+		}
+
+		String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", c.getNombre());
+		if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
+
+		if (!nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
+			JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras.");
+			return;
+		}
+
+		String nuevoTelefono = JOptionPane.showInputDialog(this, "Nuevo teléfono:", c.getTelefono());
+		if (nuevoTelefono == null || nuevoTelefono.trim().isEmpty()) return;
+
+		if (!nuevoTelefono.matches("\\d{9}")) {
+			JOptionPane.showMessageDialog(this, "El teléfono debe tener 9 dígitos.");
+			return;
+		}
+
+		String nuevaDireccion = JOptionPane.showInputDialog(this, "Nueva dirección:", c.getDireccion());
+		if (nuevaDireccion == null || nuevaDireccion.trim().isEmpty()) return;
+
+		// validar teléfono duplicado si cambió
+		for (Cliente cli : listaClientes) {
+			if (cli != c && cli.getTelefono().equals(nuevoTelefono.trim())) {
+				JOptionPane.showMessageDialog(this, "El teléfono ya está registrado en otro cliente.");
+				return;
+			}
+		}
+
+		c.setNombre(nuevoNombre.trim());
+		c.setTelefono(nuevoTelefono.trim());
+		c.setDireccion(nuevaDireccion.trim());
+
+		guardarClientes();
+		listarClientesEnTabla();
+		mostrarClienteEnCampos(c);
+
+		JOptionPane.showMessageDialog(this, "Cliente modificado correctamente.");
+	}
+
+	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
+		String busqueda = txtNombre.getText().trim();
+
+		if (busqueda.isEmpty()) {
+			busqueda = txtDni.getText().trim();
+		}
+		if (busqueda.isEmpty()) {
+			busqueda = txtTelefono.getText().trim();
+		}
+
+		if (busqueda.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Ingrese nombre, DNI, ID o teléfono para eliminar.");
+			return;
+		}
+
+		Cliente c = buscarCliente(busqueda);
+
+		if (c == null) {
+			JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
+			return;
+		}
+
+		int opcion = JOptionPane.showConfirmDialog(
+			this,
+			"¿Está seguro de eliminar este cliente?",
+			"Confirmar eliminación",
+			JOptionPane.YES_NO_OPTION
+		);
+
+		if (opcion != JOptionPane.YES_OPTION) {
+			return;
+		}
+
+		listaClientes.remove(c);
+
+		guardarClientes();
+		listarClientesEnTabla();
+		limpiarCampos();
+
+		JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
+	}
+
+	protected void do_bt_Salir_actionPerformed(ActionEvent e) {
+		ventanaPrincipal.setEnabled(true);
+	    ventanaPrincipal.toFront();
+	    dispose();
 	}
 }
-
